@@ -1,0 +1,18 @@
+{
+  "name": "project-hopz",
+  "version": "0.1.0",
+  "description": "PROJECT HOPZ - Node.js/Express backend API for the HOPZ mobile app",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0"
+  }
+}
