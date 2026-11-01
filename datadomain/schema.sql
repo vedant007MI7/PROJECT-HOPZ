@@ -1,0 +1,89 @@
+-- Safe to run twice: every statement is IF NOT EXISTS.
+
+CREATE TABLE IF NOT EXISTS users (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name          TEXT NOT NULL,
+  phone         TEXT,
+  email         TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  role          TEXT NOT NULL CHECK (role IN ('rider', 'driver')),
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS driver_profiles (
+  user_id             UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  vehicle_type        TEXT NOT NULL CHECK (vehicle_type IN ('auto', 'mini', 'sedan')),
+  vehicle_model       TEXT,
+  plate               TEXT,
+  is_online           BOOLEAN NOT NULL DEFAULT false,
+  lat                 DOUBLE PRECISION CHECK (lat BETWEEN -90 AND 90),
+  lng                 DOUBLE PRECISION CHECK (lng BETWEEN -180 AND 180),
+  location_updated_at TIMESTAMPTZ,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_driver_profiles_online ON driver_profiles (is_online, vehicle_type);
+
+CREATE TABLE IF NOT EXISTS rides (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  rider_id     UUID NOT NULL REFERENCES users(id),
+  driver_id    UUID REFERENCES users(id),
+  pickup_text  TEXT NOT NULL,
+  pickup_lat   DOUBLE PRECISION NOT NULL CHECK (pickup_lat BETWEEN -90 AND 90),
+  pickup_lng   DOUBLE PRECISION NOT NULL CHECK (pickup_lng BETWEEN -180 AND 180),
+  drop_text    TEXT NOT NULL,
+  drop_lat     DOUBLE PRECISION NOT NULL CHECK (drop_lat BETWEEN -90 AND 90),
+  drop_lng     DOUBLE PRECISION NOT NULL CHECK (drop_lng BETWEEN -180 AND 180),
+  vehicle_type TEXT NOT NULL CHECK (vehicle_type IN ('auto', 'mini', 'sedan')),
+  distance_km  NUMERIC(8, 2) NOT NULL CHECK (distance_km >= 0),
+  fare         INTEGER NOT NULL CHECK (fare >= 0),
+  status       TEXT NOT NULL DEFAULT 'requested'
+               CHECK (status IN ('requested', 'accepted', 'arrived', 'started', 'completed', 'cancelled')),
+  start_pin    TEXT CHECK (start_pin ~ '^[0-9]{4}$'),
+  pin_attempts INTEGER NOT NULL DEFAULT 0 CHECK (pin_attempts >= 0),
+  cancelled_by TEXT CHECK (cancelled_by IN ('rider', 'driver')),
+  requested_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  accepted_at  TIMESTAMPTZ,
+  arrived_at   TIMESTAMPTZ,
+  started_at   TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  cancelled_at TIMESTAMPTZ,
+  CHECK (driver_id <> rider_id)
+);
+CREATE INDEX IF NOT EXISTS idx_rides_status   ON rides (status);
+CREATE INDEX IF NOT EXISTS idx_rides_rider    ON rides (rider_id);
+CREATE INDEX IF NOT EXISTS idx_rides_driver   ON rides (driver_id);
+-- Database-level guarantee: one active ride per driver, even if two accepts race.
+CREATE UNIQUE INDEX IF NOT EXISTS uq_rides_driver_active
+  ON rides (driver_id) WHERE status IN ('accepted', 'arrived', 'started');
+-- Same for riders, so a double-tap on "request" cannot create two rides.
+CREATE UNIQUE INDEX IF NOT EXISTS uq_rides_rider_active
+  ON rides (rider_id) WHERE status IN ('requested', 'accepted', 'arrived', 'started');
+
+CREATE TABLE IF NOT EXISTS ratings (
+  ride_id    UUID PRIMARY KEY REFERENCES rides(id),
+  stars      INTEGER NOT NULL CHECK (stars BETWEEN 1 AND 5),
+  tip        INTEGER NOT NULL DEFAULT 0 CHECK (tip >= 0),
+  comment    TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS push_tokens (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token      TEXT NOT NULL UNIQUE,
+  platform   TEXT NOT NULL CHECK (platform IN ('ios', 'android')),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_push_tokens_user ON push_tokens (user_id);
+
+CREATE TABLE IF NOT EXISTS ride_events (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ride_id    UUID NOT NULL REFERENCES rides(id),
+  status     TEXT NOT NULL
+             CHECK (status IN ('requested', 'accepted', 'arrived', 'started', 'completed', 'cancelled', 'declined')),
+  actor_id   UUID NOT NULL REFERENCES users(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_ride_events_ride  ON ride_events (ride_id);
+-- Serves "rides this driver declined" in GET /drivers/requests.
+CREATE INDEX IF NOT EXISTS idx_ride_events_actor ON ride_events (actor_id, status);
