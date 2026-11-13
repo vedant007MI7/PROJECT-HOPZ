@@ -8,7 +8,7 @@ import { Sora_600SemiBold, Sora_700Bold } from '@expo-google-fonts/sora';
 import { AppProvider, useApp } from './src/state';
 import { BG } from './src/theme';
 import { API_URL } from './src/config';
-import RealMap from './src/components/RealMap';
+import RealMap, { ZoomButtons } from './src/components/RealMap';
 import Nav from './src/components/Nav';
 import { FadeIn } from './src/components/UI';
 import { Splash, Login, Signup } from './src/screens/Entry';
@@ -49,6 +49,7 @@ function Root() {
       <FadeIn key={s.screen}>
         <Screen />
       </FadeIn>
+      {MAP_SCREENS.includes(s.screen) ? <ZoomButtons /> : null}
       {NAV_SCREENS.includes(s.screen) ? <Nav /> : null}
     </LinearGradient>
   );

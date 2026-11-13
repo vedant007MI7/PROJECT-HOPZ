@@ -76,7 +76,7 @@ export const placeByName = (name) => PICKED.get(name) || SUGGESTIONS.find((p) =>
 const RIDER_SCREEN = { requested: 'rSearch', accepted: 'rDriver', arrived: 'rDriver', started: 'rTrip', completed: 'rDone' };
 const DRIVER_STAGE = { accepted: 0, arrived: 1, started: 2 };
 const RIDER_LIVE = ['rSearch', 'rDriver', 'rTrip'];
-const POLL_MS = 2500;
+const POLL_MS = 4000;
 
 // Opens the phone's dialer.
 export function callNumber(phone) {
@@ -119,14 +119,14 @@ export function AppProvider({ children }) {
   })();
   const estimate = (id) => estimateFare(id, haversineKm(s.fix, placeByName(s.dest)));
 
-  // ----- the user's real position: fare estimates, the map, and (for riders) the nearest suggestion as the default destination -----
+  // ----- rider's real position: used for fare estimates, and to default the destination to the nearest suggestion -----
   useEffect(() => {
-    if (!s.user || s.fixed) return;
+    if (s.role !== 'rider' || !s.user || s.fixed) return;
     let alive = true;
     currentPlace().then((fix) => {
       if (!alive) return;
       const nearest = SUGGESTIONS.reduce((a, b) => (haversineKm(fix, b) < haversineKm(fix, a) ? b : a));
-      setS((o) => (o.fixed ? o : { ...o, fix, fixed: true, dest: o.role === 'rider' && o.dest === INIT.dest ? nearest.name : o.dest }));
+      setS((o) => (o.fixed ? o : { ...o, fix, fixed: true, dest: o.dest === INIT.dest ? nearest.name : o.dest }));
     });
     return () => { alive = false; };
   }, [s.role, s.user, s.fixed]);
@@ -286,10 +286,7 @@ export function AppProvider({ children }) {
         const perm = await Location.getForegroundPermissionsAsync();
         if (perm.status !== 'granted') return;
         const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-        if (!alive) return;
-        const { latitude: lat, longitude: lng } = pos.coords;
-        setS((o) => ({ ...o, fix: { ...o.fix, lat, lng } })); // keeps the driver's own map marker moving
-        await api.location(lat, lng);
+        if (alive) await api.location(pos.coords.latitude, pos.coords.longitude);
       } catch {
         // Missed one beat; the next tick retries.
       }
@@ -319,7 +316,7 @@ export function AppProvider({ children }) {
           return go('rHome', { ride: null });
         }
         const next = RIDER_SCREEN[ride.status];
-        setS((o) => (o.ride?.id !== ride.id || !RIDER_LIVE.includes(o.screen) ? o : o.screen === next ? { ...o, ride } : { ...o, ride, quiet: false, screen: next }));
+        setS((o) => (o.ride?.id !== ride.id || !RIDER_LIVE.includes(o.screen) ? o : o.screen === next ? (JSON.stringify(o.ride) === JSON.stringify(ride) ? o : { ...o, ride }) : { ...o, ride, quiet: false, screen: next }));
       });
     } else if (s.screen === 'dHome' && s.role === 'driver') {
       loadStats();

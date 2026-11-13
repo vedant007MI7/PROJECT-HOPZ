@@ -1,11 +1,35 @@
 // Real map behind the rider and driver screens (react-native-maps: Apple Maps on iPhone, Google on Android).
 // It is display-only: touches go to the screen on top. What it shows depends on the current screen.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { TOP } from '../theme';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { useApp, placeByName } from '../state';
 import { C } from '../theme';
 import { fetchRoute } from '../routes';
+
+// The map sits behind the screens (they would swallow touches), so zoom is done with the buttons below.
+let mapRef = null;
+let region = null;
+function zoomBy(factor) {
+  if (!mapRef || !region) return;
+  mapRef.animateToRegion({
+    ...region,
+    latitudeDelta: Math.min(Math.max(region.latitudeDelta * factor, 0.0008), 2),
+    longitudeDelta: Math.min(Math.max(region.longitudeDelta * factor, 0.0008), 2),
+  }, 250);
+}
+
+// + / - buttons. Rendered in App.js above the screens.
+export function ZoomButtons() {
+  const btn = { width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(20,24,32,0.92)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' };
+  return (
+    <View pointerEvents="box-none" style={{ position: 'absolute', right: 16, top: TOP + 76, gap: 10 }}>
+      <Pressable accessibilityLabel="Zoom in" onPress={() => zoomBy(0.5)} style={btn}><Text style={{ color: '#fff', fontSize: 24, lineHeight: 26 }}>+</Text></Pressable>
+      <Pressable accessibilityLabel="Zoom out" onPress={() => zoomBy(2)} style={btn}><Text style={{ color: '#fff', fontSize: 24, lineHeight: 26 }}>−</Text></Pressable>
+    </View>
+  );
+}
 
 const RIDER = '#4DA3FF'; // rider and pickup point: blue
 const DRIVER = C.amber; // driver's car: amber
@@ -115,7 +139,8 @@ export default function RealMap() {
   return (
     <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
       <MapView
-        ref={ref}
+        ref={(m) => { ref.current = m; mapRef = m; }}
+        onRegionChangeComplete={(r) => { region = r; }}
         style={{ flex: 1 }}
         initialRegion={{ latitude: first.latitude - 0.0022, longitude: first.longitude, latitudeDelta: 0.015, longitudeDelta: 0.015 }}
         userInterfaceStyle="dark"
