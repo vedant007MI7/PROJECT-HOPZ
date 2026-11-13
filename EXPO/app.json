@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Hopz",
+    "slug": "hopz-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#172A3A"
+    },
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#14212C"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      "expo-status-bar",
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Hopz uses your location to find your pickup point and match you with nearby drivers.",
+          "locationWhenInUsePermission": "Hopz uses your location to find your pickup point and match you with nearby drivers."
+        }
+      ]
+    ]
+  }
+}
