@@ -119,16 +119,54 @@ export function AppProvider({ children }) {
   })();
   const estimate = (id) => estimateFare(id, haversineKm(s.fix, placeByName(s.dest)));
 
-  // ----- rider's real position: used for fare estimates, and to default the destination to the nearest suggestion -----
+  // ----- the user's real position (rider and driver): fare estimates, the map, and (for riders) the nearest suggestion as the default destination -----
   useEffect(() => {
-    if (s.role !== 'rider' || !s.user || s.fixed) return;
+    if (!s.user || s.fixed) return;
     let alive = true;
-    currentPlace().then((fix) => {
+    let timer = null;
+    const load = () => currentPlace().then((fix) => {
       if (!alive) return;
+      // Fell back to the default place (no permission yet, or no GPS fix): keep the default on screen and try again.
+      if (fix === HOME) {
+        timer = setTimeout(load, 6000);
+        return;
+      }
       const nearest = SUGGESTIONS.reduce((a, b) => (haversineKm(fix, b) < haversineKm(fix, a) ? b : a));
-      setS((o) => (o.fixed ? o : { ...o, fix, fixed: true, dest: o.dest === INIT.dest ? nearest.name : o.dest }));
+      setS((o) => (o.fixed ? o : { ...o, fix, fixed: true, dest: o.role === 'rider' && o.dest === INIT.dest ? nearest.name : o.dest }));
     });
-    return () => { alive = false; };
+    load();
+    return () => { alive = false; clearTimeout(timer); };
+  }, [s.role, s.user, s.fixed]);
+
+  // ----- rider: follow the real position, so the map pin matches where they actually are -----
+  useEffect(() => {
+    if (s.role !== 'rider' || !s.user) return undefined;
+    let alive = true;
+    let sub = null;
+    (async () => {
+      try {
+        const perm = await Location.getForegroundPermissionsAsync();
+        if (perm.status !== 'granted') return;
+        sub = await Location.watchPositionAsync(
+          { accuracy: Location.Accuracy.High, distanceInterval: 15, timeInterval: 5000 },
+          (pos) => {
+            if (!alive) return;
+            const { latitude: lat, longitude: lng } = pos.coords;
+            const old = sRef.current.fix;
+            if (haversineKm(old, { lat, lng }) > 0.5) {
+              // Moved a long way (or the first fix was stale): refresh the place name too.
+              currentPlace().then((fix) => alive && setS((o) => ({ ...o, fix })));
+            } else {
+              setS((o) => ({ ...o, fix: { ...o.fix, lat, lng } }));
+            }
+          },
+        );
+        if (!alive) sub.remove();
+      } catch {
+        // No live position; the fix from login stays.
+      }
+    })();
+    return () => { alive = false; if (sub) sub.remove(); };
   }, [s.role, s.user, s.fixed]);
 
   // ----- session -----
