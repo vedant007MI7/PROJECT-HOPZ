@@ -1,11 +1,14 @@
 // Real map behind the rider and driver screens (react-native-maps: Apple Maps on iPhone, Google on Android).
 // It is display-only: touches go to the screen on top. What it shows depends on the current screen.
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { useApp, placeByName } from '../state';
 import { C } from '../theme';
+import { fetchRoute } from '../routes';
 
+const RIDER = '#4DA3FF'; // rider and pickup point: blue
+const DRIVER = C.amber; // driver's car: amber
 const PAD = { top: 150, bottom: 420, left: 60, right: 60 }; // keep pins clear of the sheet at the bottom
 
 const pt = (p) => (p && typeof p.lat === 'number' && typeof p.lng === 'number' ? { lat: p.lat, lng: p.lng } : null);
@@ -36,7 +39,7 @@ function scene(s) {
         if (me && pickup) line = [me, pickup];
       }
     } else if (me) {
-      pins.push({ key: 'me', kind: 'me', ...me });
+      pins.push({ key: 'car', kind: 'car', ...me });
     }
   } else if (sc === 'rRide') {
     const drop = pt(placeByName(s.dest));
@@ -58,31 +61,43 @@ function scene(s) {
     if (car) pins.push({ key: 'car', kind: 'car', ...car });
     if (car && target) line = [car, target];
   } else if (me) {
-    pins.push({ key: 'me', kind: 'me', ...me });
+    pins.push({ key: 'pickup', kind: 'pickup', ...me });
   }
   return { pins, line, fit: pins.map((p) => ({ latitude: p.lat, longitude: p.lng })) };
 }
 
 function Pin({ kind }) {
   if (kind === 'drop') {
-    return <View style={{ width: 18, height: 18, borderRadius: 5, backgroundColor: C.steel, borderWidth: 3, borderColor: C.bgs }} />;
+    return <View style={{ width: 20, height: 20, borderRadius: 5, backgroundColor: '#fff', borderWidth: 4, borderColor: C.bgs }} />;
   }
   if (kind === 'car') {
     return (
-      <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: C.amber, borderWidth: 3, borderColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: DRIVER, borderWidth: 3, borderColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
         <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: C.bgs }} />
       </View>
     );
   }
-  // 'me' and 'pickup'
-  return <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: C.amber, borderWidth: 4, borderColor: C.bgs }} />;
+  // the rider / pickup point
+  return <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: RIDER, borderWidth: 4, borderColor: '#fff' }} />;
 }
 
 export default function RealMap() {
   const { s } = useApp();
   const ref = useRef(null);
+  const [path, setPath] = useState(null); // route along the roads
   const sc = useMemo(() => scene(s), [s.screen, s.role, s.fix, s.ride, s.req, s.dest, s.stage]);
   const first = sc.fit[0] || { latitude: s.fix.lat, longitude: s.fix.lng };
+
+  // Fetch the road route (endpoints rounded, so GPS jitter doesn't refetch every tick).
+  const a = sc.line && sc.line[0];
+  const b = sc.line && sc.line[1];
+  const lineKey = a && b ? [a.lat, a.lng, b.lat, b.lng].map((n) => n.toFixed(3)).join(',') : '';
+  useEffect(() => {
+    if (!a || !b) { setPath(null); return undefined; }
+    let alive = true;
+    fetchRoute(a, b).then((p) => { if (alive) setPath(p); });
+    return () => { alive = false; };
+  }, [lineKey]);
 
   // Re-frame the map when the points change (rounded, so tiny GPS jitter doesn't keep moving it).
   const key = sc.fit.map((p) => `${p.latitude.toFixed(4)},${p.longitude.toFixed(4)}`).join('|') + s.screen;
@@ -93,9 +108,9 @@ export default function RealMap() {
       // One point: centre slightly south of it, so the pin sits above the bottom sheet.
       m.animateCamera({ center: { latitude: sc.fit[0].latitude - 0.0022, longitude: sc.fit[0].longitude }, zoom: 15 }, { duration: 500 });
     } else {
-      m.fitToCoordinates(sc.fit, { edgePadding: PAD, animated: true });
+      m.fitToCoordinates(path && path.length > 1 ? path : sc.fit, { edgePadding: PAD, animated: true });
     }
-  }, [key]);
+  }, [key, lineKey, !!path]);
 
   return (
     <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
@@ -113,7 +128,11 @@ export default function RealMap() {
         pitchEnabled={false}
       >
         {sc.line ? (
-          <Polyline coordinates={sc.line.map((p) => ({ latitude: p.lat, longitude: p.lng }))} strokeColor={C.amber} strokeWidth={5} lineDashPattern={[1, 10]} lineCap="round" />
+          <>
+            {/* white casing under the route so it stays readable on the dark map */}
+            <Polyline coordinates={path || sc.line.map((p) => ({ latitude: p.lat, longitude: p.lng }))} strokeColor="rgba(255,255,255,0.9)" strokeWidth={9} lineCap="round" lineJoin="round" />
+            <Polyline coordinates={path || sc.line.map((p) => ({ latitude: p.lat, longitude: p.lng }))} strokeColor={C.amber} strokeWidth={5} lineCap="round" lineJoin="round" />
+          </>
         ) : null}
         {sc.pins.map((p) => (
           <Marker key={p.key} coordinate={{ latitude: p.lat, longitude: p.lng }} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges>
