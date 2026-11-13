@@ -54,6 +54,13 @@ export const SUGGESTIONS = [
   { name: 'Shaniwar Wada', sub: 'Old city', lat: 18.5195, lng: 73.8553 },
   { name: 'Hinjewadi IT Park', sub: 'Phase 1', lat: 18.5912, lng: 73.7389 },
   { name: 'Viman Nagar', sub: 'Pune', lat: 18.5679, lng: 73.9143 },
+  // Udaipur, so testing at home gives short, realistic rides.
+  { name: 'City Palace', sub: 'Udaipur', lat: 24.5764, lng: 73.6835 },
+  { name: 'Lake Pichola', sub: 'Udaipur', lat: 24.5732, lng: 73.679 },
+  { name: 'Fateh Sagar Lake', sub: 'Udaipur', lat: 24.5967, lng: 73.6724 },
+  { name: 'Udaipur City Station', sub: 'Udaipur', lat: 24.5748, lng: 73.704 },
+  { name: 'Sukhadia Circle', sub: 'Udaipur', lat: 24.5873, lng: 73.6916 },
+  { name: 'Saheliyon Ki Bari', sub: 'Udaipur', lat: 24.5995, lng: 73.6834 },
 ];
 export const PLACES = [
   { label: 'Home', dest: 'Baner Road' },
@@ -83,6 +90,7 @@ const INIT = {
   ride: null, req: null, progress: 0, rating: 4, tip: 0,
   online: false, quiet: false, left: 15, stage: 0, earn: 0, trips: 0, toast: false, lastFare: 0,
   pin: '', pinErr: false, pinMsg: '',
+  fix: HOME, fixed: false, // rider's current GPS place, and whether it has been read yet
   checking: false, offline: false, // a saved login is being checked / the server could not be reached
 };
 
@@ -101,12 +109,24 @@ export function AppProvider({ children }) {
   const fail = (title) => (e) => Alert.alert(title, e.message);
 
   // Estimate before booking, the server's own numbers once a ride exists.
-  const km = s.ride ? s.ride.distance_km : haversineKm(HOME, placeByName(s.dest));
+  const km = s.ride ? s.ride.distance_km : haversineKm(s.fix, placeByName(s.dest));
   const vehicle = (() => {
     const v = VEH.find((x) => x.id === (s.ride ? s.ride.vehicle_type : s.vehicle)) || VEH[1];
     return { ...v, fare: s.ride ? s.ride.fare : estimateFare(v.id, km), km };
   })();
-  const estimate = (id) => estimateFare(id, haversineKm(HOME, placeByName(s.dest)));
+  const estimate = (id) => estimateFare(id, haversineKm(s.fix, placeByName(s.dest)));
+
+  // ----- rider's real position: used for fare estimates, and to default the destination to the nearest suggestion -----
+  useEffect(() => {
+    if (s.role !== 'rider' || !s.user || s.fixed) return;
+    let alive = true;
+    currentPlace().then((fix) => {
+      if (!alive) return;
+      const nearest = SUGGESTIONS.reduce((a, b) => (haversineKm(fix, b) < haversineKm(fix, a) ? b : a));
+      setS((o) => (o.fixed ? o : { ...o, fix, fixed: true, dest: o.dest === INIT.dest ? nearest.name : o.dest }));
+    });
+    return () => { alive = false; };
+  }, [s.role, s.user, s.fixed]);
 
   // ----- session -----
   const startSession = async ({ user, token }) => {
