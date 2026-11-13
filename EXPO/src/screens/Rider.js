@@ -2,7 +2,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, Animated, Easing, StyleSheet } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
-import { useApp, callNumber, VEH, SUGGESTIONS, PLACES, HOME, baseFare } from '../state';
+import { useApp, callNumber, VEH, SUGGESTIONS, PLACES, baseFare } from '../state';
 import Glass from '../components/Glass';
 import Icon, { Star } from '../components/Icons';
 import { GlassButton, IconButton, Chip, Sheet, Card, Row, H, T, Price, PressScale } from '../components/UI';
@@ -40,7 +40,7 @@ export function RiderHome() {
           <Icon name="shield" color={C.steelText} />
           <View style={{ flex: 1 }}>
             <T weight="b" size={15} color={C.steelText}>Matched with the nearest driver</T>
-            <T size={13} color={C.steelText}>Pickup: {HOME.text}</T>
+            <T size={13} color={C.steelText}>Pickup: {s.fix.text}</T>
           </View>
         </Glass>
       </Sheet>
@@ -63,7 +63,7 @@ export function Destination() {
       <Card style={{ marginBottom: 16 }} contentStyle={{ gap: 12 }}>
         <Row style={{ gap: 12 }}>
           <View style={dot(C.amber)} />
-          <T weight="sb" color={C.tx2}>{HOME.text}</T>
+          <T weight="sb" color={C.tx2}>{s.fix.text}</T>
         </Row>
         <Row style={{ gap: 12 }}>
           <View style={[dot(C.steel), { borderRadius: 3 }]} />
@@ -111,7 +111,7 @@ export function RideOptions() {
           <View style={[dot(C.steel), { borderRadius: 3 }]} />
         </View>
         <View style={{ flex: 1, gap: 10 }}>
-          <T weight="sb" numberOfLines={1}>{HOME.text}</T>
+          <T weight="sb" numberOfLines={1}>{s.fix.text}</T>
           <Pressable onPress={() => go('rDest', { q: '', fromRide: true })}>
             <Row style={{ gap: 8 }}>
               <T weight="b" color={C.amber} numberOfLines={1} style={{ flex: 1 }}>{s.dest}</T>
