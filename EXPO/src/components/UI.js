@@ -113,7 +113,7 @@ export function FadeIn({ children }) {
     Animated.timing(v, { toValue: 1, duration: 450, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
   }, []);
   return (
-    <Animated.View style={[StyleSheet.absoluteFill, { opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [16, 0] }) }] }]}>
+    <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [16, 0] }) }] }]}>
       {children}
     </Animated.View>
   );

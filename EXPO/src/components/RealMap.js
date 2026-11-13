@@ -10,6 +10,7 @@ import { fetchRoute } from '../routes';
 
 // The map sits behind the screens (they would swallow touches), so zoom is done with the buttons below.
 let mapRef = null;
+let refit = null; // set by the map: brings all the points back into view
 let region = null;
 function zoomBy(factor) {
   if (!mapRef || !region) return;
@@ -25,8 +26,7 @@ export function ZoomButtons() {
   const btn = { width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(20,24,32,0.92)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' };
   return (
     <View pointerEvents="box-none" style={{ position: 'absolute', right: 16, top: TOP + 76, gap: 10 }}>
-      <Pressable accessibilityLabel="Zoom in" onPress={() => zoomBy(0.5)} style={btn}><Text style={{ color: '#fff', fontSize: 24, lineHeight: 26 }}>+</Text></Pressable>
-      <Pressable accessibilityLabel="Zoom out" onPress={() => zoomBy(2)} style={btn}><Text style={{ color: '#fff', fontSize: 24, lineHeight: 26 }}>−</Text></Pressable>
+      <Pressable accessibilityLabel="Show all points" onPress={() => refit && refit()} style={btn}><Text style={{ color: '#fff', fontSize: 20, lineHeight: 24 }}>◎</Text></Pressable>
     </View>
   );
 }
@@ -125,7 +125,7 @@ export default function RealMap() {
 
   // Re-frame the map when the points change (rounded, so tiny GPS jitter doesn't keep moving it).
   const key = sc.fit.map((p) => `${p.latitude.toFixed(4)},${p.longitude.toFixed(4)}`).join('|') + s.screen;
-  useEffect(() => {
+  const frame = () => {
     const m = ref.current;
     if (!m || !sc.fit.length) return;
     if (sc.fit.length === 1) {
@@ -134,10 +134,12 @@ export default function RealMap() {
     } else {
       m.fitToCoordinates(path && path.length > 1 ? path : sc.fit, { edgePadding: PAD, animated: true });
     }
-  }, [key, lineKey, !!path]);
+  };
+  refit = frame; // the ◎ button uses this to bring everything back into view
+  useEffect(frame, [key, lineKey, !!path]);
 
   return (
-    <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
+    <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
       <MapView
         ref={(m) => { ref.current = m; mapRef = m; }}
         onRegionChangeComplete={(r) => { region = r; }}
@@ -147,8 +149,8 @@ export default function RealMap() {
         toolbarEnabled={false}
         showsCompass={false}
         showsPointsOfInterest={false}
-        scrollEnabled={false}
-        zoomEnabled={false}
+        scrollEnabled
+        zoomEnabled
         rotateEnabled={false}
         pitchEnabled={false}
       >

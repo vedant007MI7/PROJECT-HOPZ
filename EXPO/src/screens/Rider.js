@@ -14,7 +14,7 @@ export function RiderHome() {
   const { s, go } = useApp();
   const name = s.user?.name || '';
   return (
-    <View style={{ flex: 1 }}>
+    <View pointerEvents="box-none" style={{ flex: 1 }}>
       <Row style={{ position: 'absolute', left: 20, right: 20, top: TOP, gap: 12 }}>
         <IconButton variant="amber" onPress={() => go('profile')} label="Profile">
           <Text style={{ fontFamily: F.hd, fontSize: 18, color: '#fff' }}>{(name[0] || '?').toUpperCase()}</Text>
@@ -157,7 +157,7 @@ export function RideOptions() {
   const { s, set, go, vehicle, estimate, requestRide } = useApp();
   const [booking, setBooking] = useState(false);
   return (
-    <View style={{ flex: 1 }}>
+    <View pointerEvents="box-none" style={{ flex: 1 }}>
       <Card style={{ position: 'absolute', left: 12, right: 12, top: TOP - 6 }} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12 }}>
         <IconButton name="back" label="Back" size={40} onPress={() => go('rHome')} />
         <View style={{ alignItems: 'center', gap: 3 }}>
@@ -220,7 +220,7 @@ export function Searching() {
     return () => a.stop();
   }, []);
   return (
-    <View style={{ flex: 1 }}>
+    <View pointerEvents="box-none" style={{ flex: 1 }}>
       <Sheet bottom={14} contentStyle={{ gap: 16 }}>
         <Row style={{ gap: 14 }}>
           <View style={{ width: 48, height: 48 }}>
@@ -267,7 +267,7 @@ export function DriverEnRoute() {
   const { s, cancelRide } = useApp();
   const here = s.ride?.status === 'arrived';
   return (
-    <View style={{ flex: 1 }}>
+    <View pointerEvents="box-none" style={{ flex: 1 }}>
       <Sheet bottom={14} contentStyle={{ gap: 14 }}>
         <Row style={{ justifyContent: 'space-between' }}>
           <H size={20}>{here ? 'Your driver is here' : 'Driver is on the way'}</H>
@@ -299,7 +299,7 @@ export function Trip() {
   const mins = Math.max(1, Math.ceil(((100 - s.progress) / 100) * Math.max(3, (totalKm / 25) * 60)));
   const km = Math.max(0.2, ((100 - s.progress) / 100) * totalKm).toFixed(1);
   return (
-    <View style={{ flex: 1 }}>
+    <View pointerEvents="box-none" style={{ flex: 1 }}>
       <Card style={{ position: 'absolute', left: 12, right: 12, top: TOP - 6 }} contentStyle={{ paddingVertical: 12, paddingHorizontal: 16 }}>
         <T size={12} weight="sb" color={C.tx2}>On trip to</T>
         <T weight="b" size={16} numberOfLines={1}>{s.dest}</T>

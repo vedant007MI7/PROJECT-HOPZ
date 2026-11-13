@@ -18,7 +18,7 @@ export function DriverHome() {
     return () => a.stop();
   }, []);
   return (
-    <View style={{ flex: 1 }}>
+    <View pointerEvents="box-none" style={{ flex: 1 }}>
       <Row style={{ position: 'absolute', left: 20, right: 20, top: TOP, gap: 12 }}>
         <View style={{ flex: 1 }}>
           <T size={13} color={C.tx2}>Driver mode</T>
@@ -177,7 +177,7 @@ export function DriverTrip() {
     setBusy(false);
   };
   return (
-    <View style={{ flex: 1 }}>
+    <View pointerEvents="box-none" style={{ flex: 1 }}>
       <Card style={{ position: 'absolute', left: 12, right: 12, top: TOP - 6 }} contentStyle={{ paddingVertical: 12, paddingHorizontal: 16 }}>
         <T size={12} weight="sb" color={C.tx2}>{s.stage === 2 ? `Drop · ${s.ride?.drop?.text}` : st.kicker}</T>
         <H size={20}>{st.title}</H>

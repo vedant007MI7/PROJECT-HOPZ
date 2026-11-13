@@ -163,6 +163,29 @@ export function AppProvider({ children }) {
     go('login', { user: null, ride: null, req: null, online: false });
   };
 
+  // Asks first. A driver with no ride in progress is taken offline on the way out; a driver in a ride
+  // stays as they are, and the ride is picked up again when they log back in.
+  const requestLogout = () => {
+    const driverBusy = s.role === 'driver' && !!s.ride;
+    Alert.alert(
+      'Log out?',
+      driverBusy ? 'You have a ride in progress. It will still be there when you log back in.' : s.role === 'driver' ? 'You will be taken offline.' : 'You will need to log in again.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Log out',
+          style: 'destructive',
+          onPress: async () => {
+            if (s.role === 'driver' && !s.ride) {
+              try { await api.setOnline(false); } catch { /* log out anyway */ }
+            }
+            logout();
+          },
+        },
+      ],
+    );
+  };
+
   // ----- rider actions -----
   const requestRide = async () => {
     const d = placeByName(s.dest);
@@ -283,7 +306,8 @@ export function AppProvider({ children }) {
     let alive = true;
     const send = async () => {
       try {
-        const perm = await Location.getForegroundPermissionsAsync();
+        let perm = await Location.getForegroundPermissionsAsync();
+        if (perm.status !== 'granted') perm = await Location.requestForegroundPermissionsAsync();
         if (perm.status !== 'granted') return;
         const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
         if (alive) await api.location(pos.coords.latitude, pos.coords.longitude);
@@ -291,6 +315,7 @@ export function AppProvider({ children }) {
         // Missed one beat; the next tick retries.
       }
     };
+    send(); // right away, so the rider never sees an old stored position
     const iv = setInterval(send, 5000);
     return () => { alive = false; clearInterval(iv); };
   }, [s.role, s.online]);
@@ -402,7 +427,7 @@ export function AppProvider({ children }) {
   }
 
   const actions = {
-    startSession, restoreSession, logout, requestRide, cancelRide, finishRide,
+    startSession, restoreSession, logout, requestLogout, requestRide, cancelRide, finishRide,
     setOnline, acceptRequest, declineRequest, markArrived, startTrip, completeTrip, cancelDriverRide,
   };
   return <Ctx.Provider value={{ s, set, go, vehicle, estimate, flashToast, ...actions }}>{children}</Ctx.Provider>;

@@ -110,7 +110,7 @@ function Bar({ label, ratio, today, delay }) {
 }
 
 export function Profile() {
-  const { s, logout } = useApp();
+  const { s, requestLogout } = useApp();
   const rider = s.role === 'rider';
   const u = s.user || {};
   const { data: rides } = useLoad(() => api.rides('?status=completed&limit=100'));
@@ -143,7 +143,7 @@ export function Profile() {
             <Icon name="chevron" size={18} color={C.tx2} />
           </Pressable>
         ))}
-        <Pressable onPress={logout} style={{ padding: 15 }}>
+        <Pressable onPress={requestLogout} style={{ padding: 15 }}>
           <T weight="b" color={C.tx2}>Log out</T>
         </Pressable>
       </Card>
