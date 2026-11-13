@@ -29,6 +29,11 @@ function toRide(row, viewerId) {
       vehicle_type: row.driver_vehicle_type,
       vehicle_model: row.driver_vehicle_model,
       plate: row.driver_plate,
+      // Live position, for the rider's map while the driver is on the way or on the trip.
+      location:
+        viewerId === row.rider_id && ['accepted', 'arrived', 'started'].includes(row.status) && row.driver_lat != null
+          ? { lat: row.driver_lat, lng: row.driver_lng }
+          : null,
     };
   }
 

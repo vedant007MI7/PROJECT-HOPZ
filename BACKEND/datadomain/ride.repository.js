@@ -8,6 +8,8 @@ const RIDE_SELECT = `
          dp.vehicle_type  AS driver_vehicle_type,
          dp.vehicle_model AS driver_vehicle_model,
          dp.plate         AS driver_plate,
+         dp.lat           AS driver_lat,
+         dp.lng           AS driver_lng,
          ru.name          AS rider_name,
          ru.phone         AS rider_phone
   FROM rides r

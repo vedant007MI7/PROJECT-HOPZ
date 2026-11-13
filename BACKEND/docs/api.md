@@ -27,7 +27,7 @@ Ride object (fields shown by `toRide`; `start_pin` appears only for the rider of
 }
 ```
 
-`driver` once accepted: `{ id, name, phone, vehicle_type, vehicle_model, plate }`. `rider` (`{ name, phone }`) is shown only to the ride's own driver, so they can call the rider.
+`driver` once accepted: `{ id, name, phone, vehicle_type, vehicle_model, plate, location }`. `location` is `{ lat, lng }` (the driver's latest GPS) only for the ride's rider while the ride is accepted, arrived or started; otherwise `null`. `rider` (`{ name, phone }`) is shown only to the ride's own driver, so they can call the rider.
 
 Status moves: `requested → accepted | cancelled`, `accepted → arrived | cancelled`, `arrived → started | cancelled`, `started → completed`.
 

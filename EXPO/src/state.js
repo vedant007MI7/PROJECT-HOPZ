@@ -67,7 +67,10 @@ export const PLACES = [
   { label: 'Work', dest: 'Magarpatta City' },
   { label: 'Gym', dest: 'Viman Nagar' },
 ];
-export const placeByName = (name) => SUGGESTIONS.find((p) => p.name === name) || SUGGESTIONS[0];
+// Places picked from the live search; looked up by name like the built-in suggestions.
+const PICKED = new Map();
+export const registerPlace = (p) => PICKED.set(p.name, p);
+export const placeByName = (name) => PICKED.get(name) || SUGGESTIONS.find((p) => p.name === name) || SUGGESTIONS[0];
 
 // ---------- how a ride's server status maps to a screen ----------
 const RIDER_SCREEN = { requested: 'rSearch', accepted: 'rDriver', arrived: 'rDriver', started: 'rTrip', completed: 'rDone' };
@@ -116,14 +119,14 @@ export function AppProvider({ children }) {
   })();
   const estimate = (id) => estimateFare(id, haversineKm(s.fix, placeByName(s.dest)));
 
-  // ----- rider's real position: used for fare estimates, and to default the destination to the nearest suggestion -----
+  // ----- the user's real position: fare estimates, the map, and (for riders) the nearest suggestion as the default destination -----
   useEffect(() => {
-    if (s.role !== 'rider' || !s.user || s.fixed) return;
+    if (!s.user || s.fixed) return;
     let alive = true;
     currentPlace().then((fix) => {
       if (!alive) return;
       const nearest = SUGGESTIONS.reduce((a, b) => (haversineKm(fix, b) < haversineKm(fix, a) ? b : a));
-      setS((o) => (o.fixed ? o : { ...o, fix, fixed: true, dest: o.dest === INIT.dest ? nearest.name : o.dest }));
+      setS((o) => (o.fixed ? o : { ...o, fix, fixed: true, dest: o.role === 'rider' && o.dest === INIT.dest ? nearest.name : o.dest }));
     });
     return () => { alive = false; };
   }, [s.role, s.user, s.fixed]);
@@ -283,7 +286,10 @@ export function AppProvider({ children }) {
         const perm = await Location.getForegroundPermissionsAsync();
         if (perm.status !== 'granted') return;
         const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-        if (alive) await api.location(pos.coords.latitude, pos.coords.longitude);
+        if (!alive) return;
+        const { latitude: lat, longitude: lng } = pos.coords;
+        setS((o) => ({ ...o, fix: { ...o.fix, lat, lng } })); // keeps the driver's own map marker moving
+        await api.location(lat, lng);
       } catch {
         // Missed one beat; the next tick retries.
       }

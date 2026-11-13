@@ -8,7 +8,7 @@ import { Sora_600SemiBold, Sora_700Bold } from '@expo-google-fonts/sora';
 import { AppProvider, useApp } from './src/state';
 import { BG } from './src/theme';
 import { API_URL } from './src/config';
-import HopzMap from './src/components/Map';
+import RealMap from './src/components/RealMap';
 import Nav from './src/components/Nav';
 import { FadeIn } from './src/components/UI';
 import { Splash, Login, Signup } from './src/screens/Entry';
@@ -45,7 +45,7 @@ function Root() {
   return (
     <LinearGradient colors={BG} style={{ flex: 1 }}>
       <StatusBar style="light" />
-      {MAP_SCREENS.includes(s.screen) ? <HopzMap key={s.screen === 'dTrip' ? `dt${s.stage}` : 'map'} flags={mapFlags(s)} /> : null}
+      {MAP_SCREENS.includes(s.screen) ? <RealMap /> : null}
       <FadeIn key={s.screen}>
         <Screen />
       </FadeIn>

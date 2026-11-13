@@ -2,7 +2,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, Animated, Easing, StyleSheet } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
-import { useApp, callNumber, VEH, SUGGESTIONS, PLACES, baseFare } from '../state';
+import { useApp, callNumber, VEH, SUGGESTIONS, PLACES, baseFare, registerPlace } from '../state';
+import { searchPlaces, placeCoords, searchEnabled } from '../places';
 import Glass from '../components/Glass';
 import Icon, { Star } from '../components/Icons';
 import { GlassButton, IconButton, Chip, Sheet, Card, Row, H, T, Price, PressScale } from '../components/UI';
@@ -54,6 +55,38 @@ export function Destination() {
   const q = (s.q || '').trim().toLowerCase();
   const list = SUGGESTIONS.filter((d) => !q || (d.name + ' ' + d.sub).toLowerCase().includes(q));
   const pick = (name) => go('rRide', { dest: name, q: '' });
+
+  // Live search (Ola Maps), debounced so we don't call it on every keystroke.
+  const [found, setFound] = useState([]);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const typed = (s.q || '').trim();
+  useEffect(() => {
+    if (!searchEnabled || typed.length < 3) { setFound([]); setErr(''); return undefined; }
+    let alive = true;
+    const t = setTimeout(async () => {
+      setBusy(true);
+      try {
+        const r = await searchPlaces(typed, s.fix);
+        if (alive) { setFound(r); setErr(r.length ? '' : 'No places found'); }
+      } catch (e) {
+        if (alive) { setFound([]); setErr(`Search failed: ${e.message || 'unknown error'}`); }
+      } finally {
+        if (alive) setBusy(false);
+      }
+    }, 350);
+    return () => { alive = false; clearTimeout(t); };
+  }, [typed]);
+
+  const pickFound = async (p) => {
+    try {
+      const at = p.lat != null && p.lng != null ? { lat: p.lat, lng: p.lng } : await placeCoords(p.id);
+      registerPlace({ name: p.name, sub: p.sub, ...at });
+      pick(p.name);
+    } catch (e) {
+      setErr(e.message || 'Could not select that place');
+    }
+  };
   return (
     <View style={{ flex: 1, paddingTop: TOP - 2, paddingHorizontal: 20 }}>
       <Row style={{ gap: 12, marginBottom: 16 }}>
@@ -76,8 +109,30 @@ export function Destination() {
           />
         </Row>
       </Card>
-      <T weight="b" size={13} color={C.tx2} style={{ marginHorizontal: 4, marginBottom: 10 }}>Suggestions</T>
       <ScrollView contentContainerStyle={{ gap: 10, paddingBottom: 30 }} keyboardShouldPersistTaps="handled">
+        {typed.length >= 3 && !searchEnabled && (
+          <T size={13} color={C.tx2} style={{ marginHorizontal: 4 }}>Search key not loaded: check EXPO_PUBLIC_OLA_MAPS_KEY in .env, then restart with npx expo start -c</T>
+        )}
+        {typed.length >= 3 && searchEnabled && (
+          <>
+            <T weight="b" size={13} color={C.tx2} style={{ marginHorizontal: 4 }}>{busy ? 'Searching…' : 'Search results'}</T>
+            {found.map((d) => (
+              <PressScale key={d.id || d.name} onPress={() => pickFound(d)} to={0.98}>
+                <Glass variant="flat" radius={20} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 13 }}>
+                  <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name="pin" />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <T weight="b" numberOfLines={1}>{d.name}</T>
+                    <T size={13} color={C.tx2} numberOfLines={1}>{d.sub}</T>
+                  </View>
+                </Glass>
+              </PressScale>
+            ))}
+            {!!err && !busy && <T size={13} color={C.tx2} style={{ marginHorizontal: 4 }}>{err}</T>}
+          </>
+        )}
+        <T weight="b" size={13} color={C.tx2} style={{ marginHorizontal: 4, marginTop: 4 }}>Suggestions</T>
         {list.map((d) => (
           <PressScale key={d.name} onPress={() => pick(d.name)} to={0.98}>
             <Glass variant="flat" radius={20} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 13 }}>
