@@ -13,8 +13,8 @@ export default function Glass({ variant = 'dark', radius = 20, style, contentSty
       style={[
         { borderRadius: radius },
         shadow && {
-          shadowColor: variant === 'amber' ? '#2456D6' : variant === 'sel' ? '#4F86FF' : '#3C327A',
-          shadowOpacity: variant === 'amber' ? 0.5 : variant === 'sel' ? 0.65 : 0.12,
+          shadowColor: variant === 'amber' ? '#FF7896' : variant === 'sel' ? '#FFFFFF' : '#140A5A',
+          shadowOpacity: variant === 'amber' ? 0.45 : variant === 'sel' ? 0.7 : 0.3,
           shadowRadius: variant === 'amber' ? 18 : variant === 'sel' ? 22 : 14,
           shadowOffset: { width: 0, height: 8 },
           elevation: 8,

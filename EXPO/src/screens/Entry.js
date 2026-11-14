@@ -24,36 +24,7 @@ export function Splash() {
     ]).start();
   };
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: C.splash }}>
-      <Svg style={StyleSheet.absoluteFill} width={W} height={HGT}>
-        <Defs>
-          <RadialGradient id="g1" cx="50%" cy="50%" r="50%">
-            <Stop offset="0" stopColor="#C7A9A3" stopOpacity="0.30" />
-            <Stop offset="1" stopColor="#C7A9A3" stopOpacity="0" />
-          </RadialGradient>
-          <RadialGradient id="g2" cx="50%" cy="50%" r="50%">
-            <Stop offset="0" stopColor="#9E8189" stopOpacity="0.40" />
-            <Stop offset="1" stopColor="#9E8189" stopOpacity="0" />
-          </RadialGradient>
-          <RadialGradient id="g3" cx="50%" cy="50%" r="50%">
-            <Stop offset="0" stopColor="#E8D2C4" stopOpacity="0.12" />
-            <Stop offset="1" stopColor="#E8D2C4" stopOpacity="0" />
-          </RadialGradient>
-          <RadialGradient id="g4" cx="50%" cy="50%" r="50%">
-            <Stop offset="0" stopColor="#F7EFE7" stopOpacity="0.08" />
-            <Stop offset="1" stopColor="#F7EFE7" stopOpacity="0" />
-          </RadialGradient>
-          <RadialGradient id="g5" cx="50%" cy="50%" r="50%">
-            <Stop offset="0" stopColor="#6B5560" stopOpacity="0.35" />
-            <Stop offset="1" stopColor="#9E8189" stopOpacity="0" />
-          </RadialGradient>
-        </Defs>
-        <Circle cx={W * 0.5} cy={HGT * 0.46} r={W * 0.8} fill="url(#g5)" />
-        <Circle cx={40} cy={HGT * 0.18} r={200} fill="url(#g1)" />
-        <Circle cx={W - 20} cy={HGT * 0.8} r={230} fill="url(#g2)" />
-        <Circle cx={W * 0.8} cy={HGT * 0.12} r={140} fill="url(#g3)" />
-        <Circle cx={W * 0.3} cy={HGT * 0.94} r={170} fill="url(#g4)" />
-        </Svg>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Pressable style={{ alignItems: 'center', marginTop: -40 }} onPress={() => { tag.setValue(0); btn.setValue(0); setRun((n) => n + 1); }}>
         <HopLoader key={run} width={Math.min(W * 0.5, 220)} onLanded={landed} />
         <Animated.View style={{ opacity: tag }}>
@@ -108,7 +79,7 @@ export function Login() {
   return (
     <ScrollView contentContainerStyle={{ paddingTop: TOP + 30, paddingHorizontal: 22, paddingBottom: 28, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
       <View style={{ alignItems: 'center' }}>
-        <Logo width={150} light />
+        <Logo width={150} />
         <H size={30} style={{ marginTop: 26, textAlign: 'center' }}>Welcome back</H>
         <T color={C.tx2} style={{ marginTop: 6, marginBottom: 6, textAlign: 'center' }}>Log in to book a hop or start driving.</T>
       </View>

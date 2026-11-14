@@ -7,6 +7,7 @@ import { Sora_600SemiBold, Sora_700Bold } from '@expo-google-fonts/sora';
 
 import { AppProvider, useApp } from './src/state';
 import { BG } from './src/theme';
+import Wallpaper from './src/components/Wallpaper';
 import { API_URL } from './src/config';
 import RealMap, { ZoomButtons } from './src/components/RealMap';
 import Nav from './src/components/Nav';
@@ -45,7 +46,8 @@ function Root() {
   const Screen = SCREENS[s.screen] || Splash;
   return (
     <LinearGradient colors={BG} style={{ flex: 1 }}>
-      <StatusBar style={s.screen === 'splash' ? 'light' : 'dark'} />
+      <StatusBar style="light" />
+      <Wallpaper />
       {MAP_SCREENS.includes(s.screen) ? <RealMap /> : null}
       <FadeIn key={s.screen}>
         <Screen />
@@ -66,7 +68,7 @@ export default function App() {
   }, []);
 
   const [loaded] = useFonts({ DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold, Sora_600SemiBold, Sora_700Bold });
-  if (!loaded) return <View style={{ flex: 1, backgroundColor: '#F6F4FC' }} />;
+  if (!loaded) return <View style={{ flex: 1, backgroundColor: '#2B52DD' }} />;
   return (
     <AppProvider>
       <Root />

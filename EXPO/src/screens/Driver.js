@@ -75,19 +75,19 @@ export function DriverRequest() {
   const km = Number(req.distance_km || 0).toFixed(1);
   const tile = { width: 40, height: 40, borderRadius: 13, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' };
   return (
-    <View style={{ flex: 1, backgroundColor: 'rgba(246,244,252,0.62)' }}>
+    <View style={{ flex: 1, backgroundColor: 'rgba(25,20,100,0.35)' }}>
       <View pointerEvents="none" style={{ position: 'absolute', top: TOP + 34, left: 0, right: 0, alignItems: 'center' }}>
         <T weight="b" size={12} color={C.tx2} style={{ letterSpacing: 2 }}>NEW RIDE REQUEST</T>
         <View style={{ width: 124, height: 124, marginTop: 14 }}>
           <Svg width={124} height={124} viewBox="0 0 64 64" style={{ transform: [{ rotate: '-90deg' }] }}>
-            <Circle cx="32" cy="32" r="28" fill="none" stroke="rgba(74,70,112,0.2)" strokeWidth="5" />
+            <Circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="5" />
             <Circle cx="32" cy="32" r="28" fill="none" stroke={C.amber} strokeWidth="5" strokeLinecap="round" strokeDasharray={`${C0}`} strokeDashoffset={C0 * (1 - s.left / 15)} />
           </Svg>
           <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
             <H size={34}>{s.left}</H>
           </View>
         </View>
-        <Text style={{ fontFamily: F.hd, fontSize: 48, color: C.tx, marginTop: 12, textShadowColor: 'rgba(90,135,255,0.4)', textShadowRadius: 22, textShadowOffset: { width: 0, height: 0 } }}>₹{req.fare}</Text>
+        <Text style={{ fontFamily: F.hd, fontSize: 48, color: C.tx, marginTop: 12, textShadowColor: 'rgba(255,255,255,0.55)', textShadowRadius: 22, textShadowOffset: { width: 0, height: 0 } }}>₹{req.fare}</Text>
         <T size={14} color={C.tx2} style={{ marginTop: 2 }}>{typeName} · {req.payment_method === 'online' ? 'Online payment' : 'Cash'} · {km} km trip</T>
       </View>
       <Sheet bottom={14} contentStyle={{ gap: 10 }}>

@@ -105,14 +105,14 @@ export default function HopLoader({ width = Dimensions.get('window').width * 0.5
       <Svg width={width} height={height} viewBox="-110 -380 680 480">
         <Defs>
           <LinearGradient id="hlh" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="335" y2="0">
-            <Stop offset="0" stopColor="#F7EFE7" /><Stop offset="1" stopColor="#E8D2C4" />
+            <Stop offset="0" stopColor="#FFFFFF" /><Stop offset="1" stopColor="#DCE4FF" />
           </LinearGradient>
           <LinearGradient id="hlz" gradientUnits="userSpaceOnUse" x1="366" y1="-100" x2="456" y2="0">
-            <Stop offset="0" stopColor="#E8D2C4" /><Stop offset="1" stopColor="#C7A9A3" />
+            <Stop offset="0" stopColor="#FFB08A" /><Stop offset="1" stopColor="#FF4F8B" />
           </LinearGradient>
         </Defs>
         {[[40, 0.10], [32, 0.14], [24, 0.22]].map(([w, o]) => (
-          <G key={`sh${w}`} opacity={S.fade} transform={`translate(0,${S.rise * 10 + 12})`} fill="none" stroke="#140A10" strokeOpacity={o} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round">
+          <G key={`sh${w}`} opacity={S.fade} transform={`translate(0,${S.rise * 10 + 12})`} fill="none" stroke="#0A0550" strokeOpacity={o} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round">
             <G transform={letter('h')}><Path d="M0 -150 V0 M0 -58 C0 -108 70 -108 70 -58 V0" /></G>
             <G transform={letter('o')}><Circle cx="152" cy="-50" r="50" /></G>
             <G transform={letter('p')}><Path d="M234 -100 V50" /><Circle cx="284" cy="-50" r="50" /></G>
@@ -123,13 +123,13 @@ export default function HopLoader({ width = Dimensions.get('window').width * 0.5
           <G transform={letter('o')}><Circle cx="152" cy="-50" r="50" /></G>
           <G transform={letter('p')}><Path d="M234 -100 V50" /><Circle cx="284" cy="-50" r="50" /></G>
         </G>
-        {S.ring > 0 ? <Circle cx="411" cy="-50" r={S.ringR} fill="none" stroke="#D9BDB2" strokeWidth="3" opacity={S.ring} /> : null}
+        {S.ring > 0 ? <Circle cx="411" cy="-50" r={S.ringR} fill="none" stroke="#FF8AB0" strokeWidth="3" opacity={S.ring} /> : null}
         <G opacity={g < 80 ? g / 80 : 1} transform={`translate(${z.x - HOME.x},${z.y - HOME.y + 12}) translate(411,-50) rotate(${z.rot}) translate(-411,50)`}>
           <G transform={`translate(411,${cyB}) scale(${z.sx},${z.sy}) translate(-411,${-cyB})`} fill="none" strokeLinecap="round" strokeLinejoin="round">
-            {[[40, 0.10], [32, 0.14], [24, 0.22]].map(([w, o]) => (<Path key={`zs${w}`} d={Z} stroke="#140A10" strokeOpacity={o} strokeWidth={w} />))}
+            {[[40, 0.10], [32, 0.14], [24, 0.22]].map(([w, o]) => (<Path key={`zs${w}`} d={Z} stroke="#0A0550" strokeOpacity={o} strokeWidth={w} />))}
           </G>
         </G>
-        <G fill="none" stroke="#D9BDB2" strokeLinecap="round" strokeLinejoin="round">
+        <G fill="none" stroke="#FF8AB0" strokeLinecap="round" strokeLinejoin="round">
           <Path d={Z} strokeOpacity={Math.min(0.9, 0.10 * gv)} strokeWidth={66 + extra} />
           <Path d={Z} strokeOpacity={Math.min(0.9, 0.16 * gv)} strokeWidth={50 + extra} />
           <Path d={Z} strokeOpacity={Math.min(0.9, 0.26 * gv)} strokeWidth={36 + extra} />

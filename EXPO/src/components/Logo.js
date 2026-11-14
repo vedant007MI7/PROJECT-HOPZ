@@ -14,12 +14,12 @@ const Z = 'M366 -100 H456 L366 0 H456';
 
 export default function Logo({ width = 200, light = false, glow = true }) {
   const h = (width * 250) / 560;
-  const c1 = light ? '#0E0B26' : '#F7EFE7';
-  const c2 = light ? '#2A2656' : '#E8D2C4';
-  const z1 = light ? '#6F7FFF' : '#E8D2C4';
-  const z2 = light ? '#2456D6' : '#C7A9A3';
-  const gl = light ? '#7FA6FF' : '#D9BDB2';
-  const sh = light ? '#1E1E6E' : '#140A10';
+  const c1 = light ? '#0E0B26' : '#FFFFFF';
+  const c2 = light ? '#2A2656' : '#DCE4FF';
+  const z1 = light ? '#6F7FFF' : '#FFB08A';
+  const z2 = light ? '#2456D6' : '#FF4F8B';
+  const gl = light ? '#7FA6FF' : '#FF8AB0';
+  const sh = light ? '#1E1E6E' : '#0A0550';
   const k = light ? 0.7 : 1;
   return (
     <Svg width={width} height={h} viewBox="-50 -180 560 250">

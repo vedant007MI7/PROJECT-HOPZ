@@ -23,15 +23,15 @@ function zoomBy(factor) {
 
 // + / - buttons. Rendered in App.js above the screens.
 export function ZoomButtons() {
-  const btn = { width: 44, height: 44, borderRadius: 14, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#D2CEE8', alignItems: 'center', justifyContent: 'center' };
+  const btn = { width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.92)', borderWidth: 1, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' };
   return (
     <View pointerEvents="box-none" style={{ position: 'absolute', right: 16, top: TOP + 76, gap: 10 }}>
-      <Pressable accessibilityLabel="Show all points" onPress={() => refit && refit()} style={btn}><Text style={{ color: C.tx, fontSize: 20, lineHeight: 24 }}>◎</Text></Pressable>
+      <Pressable accessibilityLabel="Show all points" onPress={() => refit && refit()} style={btn}><Text style={{ color: '#2B52DD', fontSize: 20, lineHeight: 24 }}>◎</Text></Pressable>
     </View>
   );
 }
 
-const RIDER = '#0E0B26'; // rider and pickup point: dark ink with a white ring
+const RIDER = '#FFFFFF'; // rider and pickup point: white with a blue ring
 const DRIVER = C.amber; // driver's car
 const PAD = { top: 150, bottom: 420, left: 60, right: 60 }; // keep pins clear of the sheet at the bottom
 
@@ -92,17 +92,17 @@ function scene(s) {
 
 function Pin({ kind }) {
   if (kind === 'drop') {
-    return <View style={{ width: 20, height: 20, borderRadius: 5, backgroundColor: '#fff', borderWidth: 4, borderColor: '#0E0B26' }} />;
+    return <View style={{ width: 20, height: 20, borderRadius: 5, backgroundColor: '#fff', borderWidth: 4, borderColor: '#FF4F8B' }} />;
   }
   if (kind === 'car') {
     return (
-      <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: DRIVER, borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
-        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFFFFF' }} />
+      <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#FFFFFF', borderWidth: 3, borderColor: '#FF4F8B', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#2B52DD' }} />
       </View>
     );
   }
   // the rider / pickup point
-  return <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: RIDER, borderWidth: 4, borderColor: '#FFFFFF' }} />;
+  return <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: RIDER, borderWidth: 4, borderColor: '#2B52DD' }} />;
 }
 
 export default function RealMap() {
@@ -154,13 +154,13 @@ export default function RealMap() {
         rotateEnabled={false}
         pitchEnabled={false}
       >
-        {/* Light CARTO street tiles replace Apple's map; the lavender layer below tints them into the palette */}
+        {/* Light CARTO street tiles replace Apple's map; the blue layer below tints them to match the UI */}
         <UrlTile urlTemplate="https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" maximumZ={19} shouldReplaceMapContent zIndex={-1} />
         {sc.line ? (
           <>
             {/* white casing under the route so it stays readable on the dark map */}
-            <Polyline coordinates={path || sc.line.map((p) => ({ latitude: p.lat, longitude: p.lng }))} strokeColor="rgba(255,255,255,0.9)" strokeWidth={14} lineCap="round" lineJoin="round" />
-            <Polyline coordinates={path || sc.line.map((p) => ({ latitude: p.lat, longitude: p.lng }))} strokeColor="#2456D6" strokeWidth={5} lineCap="round" lineJoin="round" />
+            <Polyline coordinates={path || sc.line.map((p) => ({ latitude: p.lat, longitude: p.lng }))} strokeColor="rgba(255,255,255,0.95)" strokeWidth={11} lineCap="round" lineJoin="round" />
+            <Polyline coordinates={path || sc.line.map((p) => ({ latitude: p.lat, longitude: p.lng }))} strokeColor="#FF4F8B" strokeWidth={5} lineCap="round" lineJoin="round" />
           </>
         ) : null}
         {sc.pins.map((p) => (
@@ -170,7 +170,7 @@ export default function RealMap() {
         ))}
       </MapView>
       {/* Dusty Teal tint: Apple Maps has no custom style, so the map is shaded teal with a see-through layer that lets touches pass */}
-      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(190,175,250,0.16)' }} />
+      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(80,120,255,0.26)' }} />
     </View>
   );
 }
