@@ -18,7 +18,7 @@ export default function Nav() {
   ];
   return (
     <View style={{ position: 'absolute', left: 22, right: 22, bottom: 20 }}>
-      <Glass variant="steel" radius={999} contentStyle={{ flexDirection: 'row', padding: 7, gap: 4 }}>
+      <Glass variant="navy" radius={999} contentStyle={{ flexDirection: 'row', padding: 7, gap: 4 }}>
         {tabs.map((t) => (
           <Pressable key={t.key} onPress={t.press} style={{ flex: 1 }}>
             {t.on ? (

@@ -91,14 +91,14 @@ export function DriverRequest() {
         <T size={14} color={C.tx2} style={{ marginTop: 2 }}>{typeName} · {req.payment_method === 'online' ? 'Online payment' : 'Cash'} · {km} km trip</T>
       </View>
       <Sheet bottom={14} contentStyle={{ gap: 10 }}>
-        <Glass variant="mid" radius={18} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }}>
+        <Glass variant="blue" radius={18} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }}>
           <View style={tile}><Icon name="pin" color={C.amber} /></View>
           <View style={{ flex: 1 }}>
             <T size={12} weight="sb" color={C.tx2}>Pickup · {Number(req.pickup_distance_km || 0).toFixed(1)} km away</T>
             <T weight="b" color={C.tx} numberOfLines={2}>{req.pickup?.text}</T>
           </View>
         </Glass>
-        <Glass variant="mid" radius={18} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }}>
+        <Glass variant="pink" radius={18} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }}>
           <View style={tile}><Icon name="car" color={C.amber} /></View>
           <View style={{ flex: 1 }}>
             <T size={12} weight="sb" color={C.tx2}>Drop · {km} km trip</T>

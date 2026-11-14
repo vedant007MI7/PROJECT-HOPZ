@@ -48,4 +48,10 @@ export const VARIANT = {
   sel: { colors: ['rgba(255,255,255,0.5)', 'rgba(255,255,255,0.22)'], gloss: ['rgba(255,255,255,0.6)', 'rgba(255,255,255,0.05)'], border: '#FFFFFF', bw: 1.5, blur: 30, tint: 'light' },
   // main buttons and active tabs: white glass
   amber: { colors: ['#FFFFFF', '#E4ECFF'], gloss: ['rgba(255,255,255,0.8)', 'rgba(255,255,255,0.05)'], border: '#FFFFFF', bw: 1, blur: 20, tint: 'light' },
+  // coloured glass tints taken from the wallpaper: they separate the menu blocks
+  navy: { colors: ['rgba(34,48,160,0.66)', 'rgba(18,28,115,0.58)'], gloss: ['rgba(255,255,255,0.16)', 'rgba(255,255,255,0.02)'], border: 'rgba(170,195,255,0.5)', blur: 30, tint: 'dark' },
+  blue: { colors: ['rgba(125,175,255,0.62)', 'rgba(60,110,240,0.46)'], gloss: ['rgba(255,255,255,0.32)', 'rgba(255,255,255,0.03)'], border: 'rgba(200,222,255,0.8)', blur: 25, tint: 'light' },
+  pink: { colors: ['rgba(255,125,175,0.62)', 'rgba(232,64,143,0.44)'], gloss: ['rgba(255,255,255,0.32)', 'rgba(255,255,255,0.03)'], border: 'rgba(255,205,225,0.8)', blur: 25, tint: 'light' },
+  violet: { colors: ['rgba(175,135,255,0.62)', 'rgba(112,72,222,0.46)'], gloss: ['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.03)'], border: 'rgba(220,200,255,0.8)', blur: 25, tint: 'light' },
+  peach: { colors: ['rgba(255,190,115,0.64)', 'rgba(255,120,80,0.44)'], gloss: ['rgba(255,255,255,0.34)', 'rgba(255,255,255,0.03)'], border: 'rgba(255,222,180,0.85)', blur: 25, tint: 'light' },
 };

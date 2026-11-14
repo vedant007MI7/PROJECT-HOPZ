@@ -27,17 +27,17 @@ export function RiderHome() {
       </Row>
       <Sheet bottom={100} contentStyle={{ gap: 16 }}>
         <PressScale onPress={() => go('rDest', { q: '', fromRide: false })}>
-          <Glass variant="steel" radius={16} style={{ height: 58 }} contentStyle={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 12 }}>
+          <Glass variant="blue" radius={16} style={{ height: 58 }} contentStyle={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 12 }}>
             <Icon name="search" color={C.tx} />
             <T weight="b" size={16} color={C.tx}>Where to?</T>
           </Glass>
         </PressScale>
         <Row style={{ gap: 10 }}>
-          {PLACES.map((p) => (
-            <Chip key={p.label} label={p.label} height={46} style={{ flex: 1 }} icon={<Icon name="pin" size={18} color={C.tx} />} onPress={() => go('rRide', { dest: p.dest })} />
+          {PLACES.map((p, i) => (
+            <Chip key={p.label} off={['pink', 'violet', 'peach'][i % 3]} label={p.label} height={46} style={{ flex: 1 }} icon={<Icon name="pin" size={18} color={C.tx} />} onPress={() => go('rRide', { dest: p.dest })} />
           ))}
         </Row>
-        <Glass variant="light" radius={16} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14 }}>
+        <Glass variant="violet" radius={16} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14 }}>
           <Icon name="shield" color={C.steelText} />
           <View style={{ flex: 1 }}>
             <T weight="b" size={15} color={C.steelText}>Matched with the nearest driver</T>

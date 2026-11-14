@@ -47,10 +47,10 @@ export function IconButton({ name, onPress, label, size = 46, children, variant 
   );
 }
 
-export function Chip({ label, icon, on, onPress, style, height = 42 }) {
+export function Chip({ label, icon, on, onPress, style, height = 42, off = 'steel' }) {
   return (
     <PressScale onPress={onPress} to={0.95} style={style}>
-      <Glass variant={on ? 'amber' : 'steel'} radius={999} style={{ height }} contentStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 8 }}>
+      <Glass variant={on ? 'amber' : off} radius={999} style={{ height }} contentStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 8 }}>
         {icon}
         <Text numberOfLines={1} style={[s.chipTxt, on && { color: C.amberText }]}>
           {label}
@@ -135,7 +135,7 @@ export function Sheet({ bottom = 14, children, style, contentStyle }) {
         style,
       ]}
     >
-      <Glass variant="dark" radius={20} contentStyle={[{ padding: 18, gap: 14 }, contentStyle]}>
+      <Glass variant="navy" radius={22} contentStyle={[{ padding: 18, gap: 14 }, contentStyle]}>
         {children}
       </Glass>
     </Animated.View>
