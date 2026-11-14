@@ -1,12 +1,15 @@
 const router = require('express').Router();
+const rateLimit = require('express-rate-limit');
+const config = require('../config');
 const rideBusiness = require('../business/ride.business');
 const paymentBusiness = require('../business/payment.business');
 const requireAuth = require('./auth.middleware');
 const requireRole = require('./role.middleware');
 const validate = require('./validate');
+const idempotent = require('./idempotency.middleware');
 const schemas = require('./schemas/ride.schema');
 const { ROLES } = require('../function/constants');
-const { ok } = require('../function/response');
+const { ok, fail } = require('../function/response');
 
 const rider = requireRole(ROLES.RIDER);
 const driver = requireRole(ROLES.DRIVER);
@@ -14,14 +17,26 @@ const withId = validate(schemas.rideIdParam, 'params');
 
 router.use(requireAuth);
 
+// Stops one rider from spamming ride requests. Counted per user (the route is behind login). Off in tests.
+const createLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: config.rideCreateLimitPerMinute,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => String(req.user.id),
+  skip: () => config.nodeEnv === 'test',
+  handler: (req, res) => res.status(429).json(fail('Too many ride requests, wait a minute and try again')),
+});
+
 // #6
-router.post('/', rider, validate(schemas.createRide), async (req, res) => {
+router.post('/', rider, idempotent, createLimiter, validate(schemas.createRide), async (req, res) => {
   res.status(201).json(ok(await rideBusiness.createRide(req.user, req.valid.body)));
 });
 
 // #8
 router.get('/', validate(schemas.listRides, 'query'), async (req, res) => {
-  res.json(ok(await rideBusiness.listRides(req.user, req.valid.query)));
+  const { rides, nextCursor } = await rideBusiness.listRides(req.user, req.valid.query);
+  res.json({ ...ok(rides), next_cursor: nextCursor });
 });
 
 // #7
@@ -66,7 +81,7 @@ router.post('/:id/rating', rider, withId, validate(schemas.rateRide), async (req
 });
 
 // #16 start an online payment for a completed ride
-router.post('/:id/pay', rider, withId, async (req, res) => {
+router.post('/:id/pay', rider, idempotent, withId, async (req, res) => {
   res.status(201).json(ok(await paymentBusiness.createPaymentOrder(req.user, req.valid.params.id)));
 });
 

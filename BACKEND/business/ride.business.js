@@ -5,6 +5,7 @@ const driverProfileRepo = require('../datadomain/driver-profile.repository');
 const db = require('../wrapper/db');
 const { expireStaleRequests } = require('./expiry.business');
 const config = require('../config');
+const { encodeCursor, decodeCursor } = require('../function/cursor');
 const AppError = require('../function/app-error');
 const { haversineKm } = require('../function/geo');
 const { calculateFare } = require('../function/fare');
@@ -77,10 +78,21 @@ async function getRide(user, rideId) {
   return toRide(ride, user.id);
 }
 
+// Asks for one row more than the page so it knows whether another page exists.
 async function listRides(user, query) {
   await expireStaleRequests();
-  const rows = await rideRepo.listForUser(user.id, user.role, query);
-  return rows.map((row) => toRide(row, user.id));
+  const { cursor, limit, ...rest } = query;
+  const rows = await rideRepo.listForUser(user.id, user.role, {
+    ...rest,
+    limit: limit + 1,
+    cursor: cursor ? decodeCursor(cursor) : null,
+  });
+  const page = rows.slice(0, limit);
+  const last = page[page.length - 1];
+  const nextCursor = rows.length > limit
+    ? encodeCursor({ requestedAtText: last.requested_at_text, id: last.id })
+    : null;
+  return { rides: page.map((row) => toRide(row, user.id)), nextCursor };
 }
 
 async function cancelRide(user, rideId) {

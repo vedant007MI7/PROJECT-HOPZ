@@ -11,6 +11,8 @@ Auth = header `Authorization: Bearer <token>` (token from signup/login).
 
 Common errors: `400` invalid input · `401` missing/invalid token · `403` wrong role · `404` unknown id or not your ride · `409` wrong status for the action · `423` locked · `429` rate limited · `500` server error · `502` the payment provider failed · `503` online payments are not set up on the server.
 
+Retrying safely: `POST /rides` (6) and `POST /rides/:id/pay` (23) accept an optional header `Idempotency-Key: <8-100 letters, digits, - or _>`. If the connection drops, send the same request again with the same key: the first one runs, and a repeat gets the same status and body back (header `Idempotent-Replay: true`) without creating a second ride or payment. Keys are per user and kept 24 hours. Same key with a different body or ride: `422`. First request still running: `409`. Failed requests free the key, so a retry runs again.
+
 Ride object (fields shown by `toRide`; `start_pin` appears only for the rider of that ride):
 
 ```json
@@ -75,7 +77,7 @@ Status moves: `requested → accepted | cancelled`, `accepted → arrived | canc
 - Body: `{ "pickup": {text, lat, lng}, "drop": {text, lat, lng}, "vehicle_type": "auto|mini|sedan", "payment_method": "cash|online (optional, default cash)" }`
 - Server computes `distance_km` (haversine) and `fare`; the client never sends them.
 - Success `201`: the ride, status `requested`, with `start_pin` null until accepted.
-- Errors: `400` · `403` not a rider · `409` rider already has an active ride
+- Errors: `400` · `403` not a rider · `409` rider already has an active ride · `429` more than 5 requests in a minute
 
 ## 7. GET /rides/:id
 - Auth: rider or driver of that ride
@@ -84,9 +86,9 @@ Status moves: `requested → accepted | cancelled`, `accepted → arrived | canc
 
 ## 8. GET /rides
 - Auth: any
-- Query: `status?` (one of the six statuses), `limit?` (1–100, default 20), `offset?` (default 0)
-- Success `200`: array of the caller's own rides, newest first.
-- Errors: `400`
+- Query: `status?` (one of the six statuses), `limit?` (1–100, default 20), `cursor?` (from the previous reply's `next_cursor`), `offset?` (old way, default 0; cannot be combined with `cursor`)
+- Success `200`: `data` is the array of the caller's own rides, newest first, and `next_cursor` is a string to pass as `cursor` for the next page, or `null` on the last page. Cursor paging costs the same on every page; `offset` gets slower the deeper it goes.
+- Errors: `400` (bad status, bad cursor, or cursor together with offset)
 
 ## 9. POST /rides/:id/cancel
 - Auth: rider or driver of the ride

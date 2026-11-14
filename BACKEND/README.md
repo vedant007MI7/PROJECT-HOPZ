@@ -18,12 +18,14 @@ Check it is up: `GET /api/health` and `GET /api/health/db`.
 
 | Name | Needed | What it does |
 | --- | --- | --- |
-| `DATABASE_URL` | yes | Neon connection string (keep `?sslmode=require`) |
+| `DATABASE_URL` | yes | Neon connection string (keep `?sslmode=require`). On Render use the pooled one (host contains `-pooler`) |
 | `JWT_SECRET` | yes | Signs login tokens and keys the password-reset code hashes |
 | `JWT_EXPIRES_IN` | no | Token lifetime, default `7d` |
 | `PIN_MAX_ATTEMPTS` | no | Wrong start PINs before a ride locks, default 5 |
 | `NEARBY_RADIUS_KM` | no | How far a driver sees requests, default 5 |
 | `RIDE_REQUEST_TIMEOUT_SECONDS` | no | A ride nobody accepts is cancelled after this, default 180 |
+| `RIDE_CREATE_LIMIT_PER_MINUTE` | no | Ride requests one rider can make per minute, default 5 |
+| `PG_POOL_MAX` | no | Most database connections one server process opens, default 10 |
 | `CORS_ORIGINS` | no | Comma-separated allowed browser origins; empty allows all |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | for online payment | Razorpay **test** keys (`rzp_test_`) |
 | `SMS_PROVIDER` | no | `log` (default) prints password-reset codes in the server log |
@@ -45,6 +47,7 @@ A request flows `service` (route, auth, validation) → `business` (rules) → `
 - **Ride states.** One table of allowed moves (`requested → accepted → arrived → started → completed`, with cancel before the start). Every change writes a `ride_events` row.
 - **Start PIN.** Four digits, shown only to the rider; five wrong tries lock the start.
 - **Unanswered requests expire.** Stale `requested` rides are cancelled by the system the next time any request reads them.
+- **Safe retries.** `POST /rides` and the payment start take an optional `Idempotency-Key` header. The key is claimed with an `INSERT` on a primary key, so two parallel requests cannot both run, and a repeat gets the saved answer.
 - **Fare and distance are computed on the server.** The client never sends them.
 - **Payments.** The server creates the Razorpay order from the ride's fare and marks a ride paid only after checking Razorpay's signature. One paid payment per ride is a database constraint.
 - **Password reset.** A 6-digit code, stored only as a keyed hash, valid 10 minutes, locked after 5 wrong guesses, and the same reply whether or not the account exists.

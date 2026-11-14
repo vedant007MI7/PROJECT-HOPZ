@@ -27,12 +27,12 @@ export async function loadToken() {
 export const hasToken = () => !!token;
 export const setUnauthorizedHandler = (fn) => { onUnauthorized = fn; };
 
-async function request(method, path, body) {
+async function request(method, path, body, extraHeaders) {
   let res;
   try {
     res = await fetch(`${API_URL}${path}`, {
       method,
-      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...extraHeaders },
       body: body ? JSON.stringify(body) : undefined,
     });
   } catch {
@@ -57,7 +57,8 @@ export const api = {
   resetPassword: (b) => post('/auth/reset-password', b),
   me: () => request('GET', '/users/me'),
   // rides
-  createRide: (b) => post('/rides', b),
+  // The key makes a retry after a dropped connection safe: the server returns the same ride instead of making another.
+  createRide: (b, idempotencyKey) => request('POST', '/rides', b, { 'Idempotency-Key': idempotencyKey }),
   ride: (id) => request('GET', `/rides/${id}`),
   rides: (q = '') => request('GET', `/rides${q}`),
   cancel: (id) => post(`/rides/${id}/cancel`),

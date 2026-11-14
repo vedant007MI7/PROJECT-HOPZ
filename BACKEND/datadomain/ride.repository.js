@@ -67,14 +67,25 @@ const findById = async (id, client, forUpdate = false) => {
   return rows[0] || null;
 };
 
-const listForUser = async (userId, role, { status, limit, offset }) => {
+// Newest first. With a cursor, continues after that ride (keyset paging): the index
+// (rider_id|driver_id, requested_at DESC, id DESC) jumps straight there, so page 50 costs the same as page 1.
+// `offset` still works for old clients but must walk past every skipped row.
+// requested_at_text keeps the full microseconds for the cursor (a JS Date would cut them to milliseconds).
+const listForUser = async (userId, role, { status, limit, offset = 0, cursor }) => {
   const column = role === 'driver' ? 'r.driver_id' : 'r.rider_id';
+  const params = [userId, status || null, limit];
+  let after = '';
+  if (cursor) {
+    params.push(cursor.requestedAtText, cursor.id);
+    after = 'AND (r.requested_at, r.id) < ($4::timestamptz, $5::uuid)';
+  }
+  params.push(offset);
   const { rows } = await db.query(
-    `${RIDE_SELECT}
-     WHERE ${column} = $1 AND ($2::text IS NULL OR r.status = $2)
-     ORDER BY r.requested_at DESC, r.id
-     LIMIT $3 OFFSET $4`,
-    [userId, status || null, limit, offset]
+    `${RIDE_SELECT.replace('SELECT r.*,', 'SELECT r.*, r.requested_at::text AS requested_at_text,')}
+     WHERE ${column} = $1 AND ($2::text IS NULL OR r.status = $2) ${after}
+     ORDER BY r.requested_at DESC, r.id DESC
+     LIMIT $3 OFFSET $${params.length}`,
+    params
   );
   return rows;
 };

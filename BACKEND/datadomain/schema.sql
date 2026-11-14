@@ -80,9 +80,19 @@ CREATE TABLE IF NOT EXISTS rides (
   cancelled_at TIMESTAMPTZ,
   CHECK (driver_id <> rider_id)
 );
-CREATE INDEX IF NOT EXISTS idx_rides_status   ON rides (status);
-CREATE INDEX IF NOT EXISTS idx_rides_rider    ON rides (rider_id);
-CREATE INDEX IF NOT EXISTS idx_rides_driver   ON rides (driver_id);
+-- Ride history lists one user's rides newest first. These indexes hold them already in that order,
+-- so a page of 20 reads 20 index entries instead of fetching and sorting the user's whole history.
+CREATE INDEX IF NOT EXISTS idx_rides_rider_hist  ON rides (rider_id,  requested_at DESC, id DESC);
+CREATE INDEX IF NOT EXISTS idx_rides_driver_hist ON rides (driver_id, requested_at DESC, id DESC);
+-- Open requests are few (they expire after a few minutes), so this partial index stays tiny.
+-- It serves the driver's "requests near me" poll and the expiry sweep.
+CREATE INDEX IF NOT EXISTS idx_rides_open ON rides (vehicle_type, requested_at) WHERE status = 'requested';
+-- Driver earnings: completed rides by finish time.
+CREATE INDEX IF NOT EXISTS idx_rides_driver_done ON rides (driver_id, completed_at DESC) WHERE status = 'completed';
+-- The three single-column indexes this replaces (the new ones start with the same column).
+DROP INDEX IF EXISTS idx_rides_status;
+DROP INDEX IF EXISTS idx_rides_rider;
+DROP INDEX IF EXISTS idx_rides_driver;
 -- Database-level guarantee: one active ride per driver, even if two accepts race.
 CREATE UNIQUE INDEX IF NOT EXISTS uq_rides_driver_active
   ON rides (driver_id) WHERE status IN ('accepted', 'arrived', 'started');
@@ -158,3 +168,17 @@ CREATE TABLE IF NOT EXISTS otp_codes (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_otp_codes_user ON otp_codes (user_id, purpose, created_at DESC);
+
+-- Idempotency keys: lets a client safely retry a POST (ride request, payment start) without doing it twice.
+CREATE TABLE IF NOT EXISTS idempotency_keys (
+  user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  key             TEXT NOT NULL,
+  route           TEXT NOT NULL,
+  request_hash    TEXT NOT NULL,
+  status          TEXT NOT NULL DEFAULT 'processing' CHECK (status IN ('processing', 'done')),
+  response_status INTEGER,
+  response_body   JSONB,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, key)
+);
+CREATE INDEX IF NOT EXISTS idx_idempotency_created ON idempotency_keys (created_at);

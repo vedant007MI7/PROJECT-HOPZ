@@ -26,12 +26,16 @@ module.exports = {
   port: int(env.PORT, 3000),
   nodeEnv: env.NODE_ENV || 'development',
   databaseUrl: env.DATABASE_URL,
+  // Most connections one server process keeps open to Postgres.
+  dbPoolMax: int(env.PG_POOL_MAX, 10),
   jwtSecret: env.JWT_SECRET,
   jwtExpiresIn: env.JWT_EXPIRES_IN || '7d',
   pinMaxAttempts: int(env.PIN_MAX_ATTEMPTS, 5),
   nearbyRadiusKm: num(env.NEARBY_RADIUS_KM, 5),
   // A 'requested' ride nobody accepts is cancelled after this long.
   rideRequestTimeoutSeconds: int(env.RIDE_REQUEST_TIMEOUT_SECONDS, 180),
+  // Ride requests one rider may create per minute.
+  rideCreateLimitPerMinute: int(env.RIDE_CREATE_LIMIT_PER_MINUTE, 5),
   // Password-reset codes: how long they last, wrong guesses allowed, and the wait before a new one is sent.
   otpTtlMinutes: int(env.OTP_TTL_MINUTES, 10),
   otpMaxAttempts: int(env.OTP_MAX_ATTEMPTS, 5),

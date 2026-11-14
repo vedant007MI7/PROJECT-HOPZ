@@ -114,6 +114,8 @@ export function AppProvider({ children }) {
   const [s, setS] = useState(INIT);
   const sRef = useRef(s);
   sRef.current = s;
+  // One booking attempt = one key. A retry of the same request reuses it; a changed request gets a new one.
+  const rideKeyRef = useRef(null);
   const toastTimer = useRef(null);
   const dismissed = useRef(new Set());
 
@@ -243,7 +245,13 @@ export function AppProvider({ children }) {
         Alert.alert('Location needed', 'Turn on location so we know where to pick you up, then try again.');
         return;
       }
-      const ride = await api.createRide({ pickup, drop: { text: d.name, lat: d.lat, lng: d.lng }, vehicle_type: s.vehicle, payment_method: s.payMethod });
+      const body = { pickup, drop: { text: d.name, lat: d.lat, lng: d.lng }, vehicle_type: s.vehicle, payment_method: s.payMethod };
+      const sig = JSON.stringify(body);
+      if (!rideKeyRef.current || rideKeyRef.current.sig !== sig) {
+        rideKeyRef.current = { sig, key: `ride-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}` };
+      }
+      const ride = await api.createRide(body, rideKeyRef.current.key);
+      rideKeyRef.current = null;
       go('rSearch', { ride });
     } catch (e) {
       fail('Could not book')(e);

@@ -20,7 +20,8 @@ const listRides = z.object({
   status: z.enum(Object.values(RIDE_STATUS)).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   offset: z.coerce.number().int().min(0).default(0),
-});
+  cursor: z.string().max(300).optional(),
+}).refine((q) => !(q.cursor && q.offset > 0), { message: 'Use either cursor or offset, not both' });
 
 const startRide = z.object({
   pin: z.string().regex(new RegExp(`^\\d{${PIN.LENGTH}}$`), `Must be ${PIN.LENGTH} digits`),
