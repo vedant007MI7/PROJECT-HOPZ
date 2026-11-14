@@ -32,6 +32,16 @@ module.exports = {
   nearbyRadiusKm: num(env.NEARBY_RADIUS_KM, 5),
   // A 'requested' ride nobody accepts is cancelled after this long.
   rideRequestTimeoutSeconds: int(env.RIDE_REQUEST_TIMEOUT_SECONDS, 180),
+  // Password-reset codes: how long they last, wrong guesses allowed, and the wait before a new one is sent.
+  otpTtlMinutes: int(env.OTP_TTL_MINUTES, 10),
+  otpMaxAttempts: int(env.OTP_MAX_ATTEMPTS, 5),
+  otpResendSeconds: int(env.OTP_RESEND_SECONDS, 60),
+  // How codes reach a phone number. 'log' prints the code in the server log; a real provider would be added in wrapper/sms.js.
+  smsProvider: env.SMS_PROVIDER || 'log',
+  // Email goes out through Brevo's HTTPS API (free plan). Without these, the code is written to the server log instead.
+  brevoApiKey: env.BREVO_API_KEY || '',
+  mailFrom: env.MAIL_FROM || '',
+  mailFromName: env.MAIL_FROM_NAME || 'Hopz',
   // Razorpay keys (use rzp_test_ keys in development). Without them, online payment returns 503.
   razorpayKeyId: env.RAZORPAY_KEY_ID || '',
   razorpayKeySecret: env.RAZORPAY_KEY_SECRET || '',

@@ -145,3 +145,16 @@ CREATE TABLE IF NOT EXISTS payments (
 CREATE INDEX IF NOT EXISTS idx_payments_ride ON payments (ride_id);
 -- A ride can be paid only once, even if two verify calls race.
 CREATE UNIQUE INDEX IF NOT EXISTS uq_payments_ride_paid ON payments (ride_id) WHERE status = 'paid';
+
+-- One-time codes (password reset). Only a hash of the code is stored.
+CREATE TABLE IF NOT EXISTS otp_codes (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  purpose    TEXT NOT NULL DEFAULT 'password_reset',
+  code_hash  TEXT NOT NULL,
+  attempts   INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at    TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_otp_codes_user ON otp_codes (user_id, purpose, created_at DESC);

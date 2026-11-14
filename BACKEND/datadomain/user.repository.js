@@ -26,4 +26,8 @@ const findById = async (id) => {
   return rows[0] || null;
 };
 
-module.exports = { create, findByEmail, findByPhone, findById };
+const updatePassword = async (id, passwordHash, client) => {
+  await (client || db).query('UPDATE users SET password_hash = $2 WHERE id = $1', [id, passwordHash]);
+};
+
+module.exports = { create, findByEmail, findByPhone, findById, updatePassword };

@@ -49,4 +49,15 @@ const login = z
   .refine((v) => v.identifier || v.email, { message: 'Email or phone number is required', path: ['identifier'] })
   .transform((v) => ({ identifier: v.identifier || v.email, password: v.password }));
 
-module.exports = { signup, login };
+// `identifier` is the phone number (preferred) or the email the account uses.
+const identifier = z.string().trim().min(1).max(254);
+
+const forgotPassword = z.object({ identifier });
+
+const resetPassword = z.object({
+  identifier,
+  code: z.string().trim().regex(/^\d{6}$/, 'Must be 6 digits'),
+  new_password: z.string().min(8).max(72),
+});
+
+module.exports = { signup, login, forgotPassword, resetPassword };

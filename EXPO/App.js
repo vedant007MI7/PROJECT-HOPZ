@@ -11,14 +11,14 @@ import { API_URL } from './src/config';
 import RealMap, { ZoomButtons } from './src/components/RealMap';
 import Nav from './src/components/Nav';
 import { FadeIn } from './src/components/UI';
-import { Splash, Login, Signup } from './src/screens/Entry';
+import { Splash, Login, Signup, ForgotPassword, ResetPassword } from './src/screens/Entry';
 import { RiderHome, Destination, RideOptions, Searching, DriverEnRoute, Trip, TripDone } from './src/screens/Rider';
 import { Activity, Earnings, Profile } from './src/screens/Lists';
 import Pay from './src/screens/Pay';
 import { DriverHome, DriverRequest, DriverTrip, DriverDone } from './src/screens/Driver';
 
 const SCREENS = {
-  splash: Splash, login: Login, signup: Signup,
+  splash: Splash, login: Login, signup: Signup, forgot: ForgotPassword, reset: ResetPassword,
   rHome: RiderHome, rDest: Destination, rRide: RideOptions, rSearch: Searching, rDriver: DriverEnRoute, rTrip: Trip, rDone: TripDone, rPay: Pay,
   rActivity: Activity, profile: Profile,
   dHome: DriverHome, dRequest: DriverRequest, dTrip: DriverTrip, dDone: DriverDone, dEarn: Earnings,

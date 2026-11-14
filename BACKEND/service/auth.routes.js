@@ -2,6 +2,7 @@ const router = require('express').Router();
 const rateLimit = require('express-rate-limit');
 const config = require('../config');
 const authBusiness = require('../business/auth.business');
+const passwordReset = require('../business/password-reset.business');
 const validate = require('./validate');
 const schemas = require('./schemas/auth.schema');
 const { ok, fail } = require('../function/response');
@@ -23,6 +24,15 @@ router.post('/signup', authLimiter, validate(schemas.signup), async (req, res) =
 
 router.post('/login', authLimiter, validate(schemas.login), async (req, res) => {
   res.json(ok(await authBusiness.login(req.valid.body)));
+});
+
+// Always answers the same way, so it cannot be used to find out which emails have accounts.
+router.post('/forgot-password', authLimiter, validate(schemas.forgotPassword), async (req, res) => {
+  res.json(ok(await passwordReset.requestReset(req.valid.body)));
+});
+
+router.post('/reset-password', authLimiter, validate(schemas.resetPassword), async (req, res) => {
+  res.json(ok(await passwordReset.resetPassword(req.valid.body)));
 });
 
 module.exports = router;

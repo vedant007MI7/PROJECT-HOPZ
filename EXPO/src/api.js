@@ -53,6 +53,8 @@ const post = (path, body) => request('POST', path, body || {});
 export const api = {
   login: (identifier, password) => post('/auth/login', { identifier, password }),
   signup: (b) => post('/auth/signup', b),
+  forgotPassword: (identifier) => post('/auth/forgot-password', { identifier }),
+  resetPassword: (b) => post('/auth/reset-password', b),
   me: () => request('GET', '/users/me'),
   // rides
   createRide: (b) => post('/rides', b),

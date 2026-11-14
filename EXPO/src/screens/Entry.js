@@ -1,6 +1,6 @@
 // Splash, Login, Sign up
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, Animated, Easing, Pressable, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { View, Text, Animated, Easing, Pressable, StyleSheet, Dimensions, ScrollView, Alert } from 'react-native';
 import Svg, { Path, Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { useApp } from '../state';
 import { api } from '../api';
@@ -100,7 +100,9 @@ export function Login() {
         <Field label="Password" placeholder="••••••••" secureTextEntry value={password} onChangeText={setPassword} />
       </View>
       <ErrText>{err}</ErrText>
-      <T weight="b" size={14} color={C.steel} style={{ textAlign: 'right', marginTop: 12, marginBottom: 22 }}>Forgot password?</T>
+      <Pressable onPress={() => { set({ resetId: email.trim() }); go('forgot'); }}>
+        <T weight="b" size={14} color={C.steel} style={{ textAlign: 'right', marginTop: 12, marginBottom: 22 }}>Forgot password?</T>
+      </Pressable>
       <GlassButton title={busy ? 'Logging in…' : 'Log in'} onPress={busy ? undefined : submit} />
       <View style={{ flex: 1, minHeight: 30 }} />
       <Pressable onPress={() => go('signup')}>
@@ -145,6 +147,91 @@ export function Signup() {
       <ErrText>{err}</ErrText>
       <View style={{ flex: 1, minHeight: 24 }} />
       <GlassButton title={busy ? 'Creating…' : 'Create account'} onPress={busy ? undefined : submit} />
+    </ScrollView>
+  );
+}
+
+// Forgot password, step 1: ask for the phone number (or email) and send a 6-digit code.
+export function ForgotPassword() {
+  const { s, go, set } = useApp();
+  const [id, setId] = useState(s.resetId || '');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const send = async () => {
+    if (!id.trim()) return setErr('Enter your mobile number or email');
+    setBusy(true);
+    setErr('');
+    try {
+      await api.forgotPassword(id.trim());
+      set({ resetId: id.trim() });
+      go('reset');
+    } catch (e) {
+      setErr(e.message);
+    }
+    setBusy(false);
+  };
+  return (
+    <ScrollView contentContainerStyle={{ paddingTop: TOP - 2, paddingHorizontal: 24, paddingBottom: 28, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+      <IconButton name="back" label="Back" onPress={() => go('login')} />
+      <H size={32} style={{ marginTop: 22, marginBottom: 6 }}>Forgot password?</H>
+      <T color={C.tx2} style={{ marginBottom: 24 }}>Enter your mobile number and we'll send you a 6-digit code. You can use your email instead.</T>
+      <Field label="Mobile number or email" placeholder="98765 43210 or you@example.com" autoCapitalize="none" autoCorrect={false} value={id} onChangeText={setId} />
+      <ErrText>{err}</ErrText>
+      <View style={{ flex: 1, minHeight: 24 }} />
+      <GlassButton title={busy ? 'Sending…' : 'Send code'} onPress={busy ? undefined : send} />
+    </ScrollView>
+  );
+}
+
+// Step 2: the code and a new password.
+export function ResetPassword() {
+  const { s, go } = useApp();
+  const [code, setCode] = useState('');
+  const [pw, setPw] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [note, setNote] = useState('');
+  const submit = async () => {
+    if (!/^\d{6}$/.test(code.trim())) return setErr('Enter the 6-digit code');
+    if (pw.length < 8) return setErr('Password must be at least 8 characters');
+    setBusy(true);
+    setErr('');
+    try {
+      await api.resetPassword({ identifier: s.resetId, code: code.trim(), new_password: pw });
+      Alert.alert('Password updated', 'You can log in with your new password now.');
+      go('login');
+      return;
+    } catch (e) {
+      setErr(e.message);
+    }
+    setBusy(false);
+  };
+  const resend = async () => {
+    setNote('');
+    setErr('');
+    try {
+      await api.forgotPassword(s.resetId);
+      setNote('If a code was not sent just now, wait a minute and try again.');
+    } catch (e) {
+      setErr(e.message);
+    }
+  };
+  return (
+    <ScrollView contentContainerStyle={{ paddingTop: TOP - 2, paddingHorizontal: 24, paddingBottom: 28, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+      <IconButton name="back" label="Back" onPress={() => go('forgot')} />
+      <H size={32} style={{ marginTop: 22, marginBottom: 6 }}>Enter the code</H>
+      <T color={C.tx2} style={{ marginBottom: 24 }}>We sent a 6-digit code to {s.resetId}. It works for 10 minutes.</T>
+      <View style={{ gap: 16 }}>
+        <Field label="6-digit code" placeholder="123456" keyboardType="number-pad" maxLength={6} value={code} onChangeText={setCode} />
+        <Field label="New password" placeholder="At least 8 characters" secureTextEntry value={pw} onChangeText={setPw} />
+      </View>
+      <ErrText>{err}</ErrText>
+      {note ? <T color={C.tx2} size={13} style={{ marginTop: 12 }}>{note}</T> : null}
+      <Pressable onPress={resend}>
+        <T weight="b" size={14} color={C.steel} style={{ textAlign: 'right', marginTop: 12 }}>Resend code</T>
+      </Pressable>
+      <View style={{ flex: 1, minHeight: 24 }} />
+      <GlassButton title={busy ? 'Updating…' : 'Reset password'} onPress={busy ? undefined : submit} />
     </ScrollView>
   );
 }
