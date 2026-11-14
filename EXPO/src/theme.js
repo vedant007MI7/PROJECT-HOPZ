@@ -37,21 +37,25 @@ export const BG = ['#1F6BEA', '#2B52DD', '#4B3FD8', '#6A3CD2'];
 export const TOP = Platform.OS === 'ios' ? 58 : (StatusBar.currentHeight || 24) + 18;
 
 // Glass recipes: gradient fill + gloss on the top half + rim colour + blur strength + blur tint
+// Soft colour glow taken from the wallpaper (blue, violet, pink, orange), laid under the white glass
+const GLOW = ['rgba(90,150,255,0.34)', 'rgba(165,110,255,0.30)', 'rgba(255,95,155,0.30)', 'rgba(255,165,85,0.30)'];
+
 export const VARIANT = {
   // frosted glass panels
-  dark: { colors: ['rgba(255,255,255,0.26)', 'rgba(255,255,255,0.10)'], gloss: ['rgba(255,255,255,0.26)', 'rgba(255,255,255,0.02)'], border: 'rgba(255,255,255,0.38)', blur: 30, tint: 'light' },
-  mid: { colors: ['rgba(255,255,255,0.24)', 'rgba(255,255,255,0.10)'], gloss: ['rgba(255,255,255,0.22)', 'rgba(255,255,255,0.02)'], border: 'rgba(255,255,255,0.36)', blur: 30, tint: 'light' },
+  dark: { colors: ['rgba(255,255,255,0.26)', 'rgba(255,255,255,0.10)'], gloss: ['rgba(255,255,255,0.26)', 'rgba(255,255,255,0.02)'], border: 'rgba(255,255,255,0.38)', blur: 30, tint: 'light', grad: GLOW },
+  mid: { colors: ['rgba(255,255,255,0.24)', 'rgba(255,255,255,0.10)'], gloss: ['rgba(255,255,255,0.22)', 'rgba(255,255,255,0.02)'], border: 'rgba(255,255,255,0.36)', blur: 30, tint: 'light', grad: GLOW },
   flat: { colors: ['rgba(255,255,255,0.20)', 'rgba(255,255,255,0.09)'], gloss: null, border: 'rgba(255,255,255,0.30)', blur: 25, tint: 'light' },
-  steel: { colors: ['rgba(255,255,255,0.22)', 'rgba(255,255,255,0.12)'], gloss: ['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.02)'], border: 'rgba(255,255,255,0.42)', blur: 25, tint: 'light' },
-  light: { colors: ['rgba(255,255,255,0.34)', 'rgba(255,255,255,0.18)'], gloss: ['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.03)'], border: 'rgba(255,255,255,0.5)', blur: 30, tint: 'light' },
+  steel: { colors: ['rgba(255,255,255,0.22)', 'rgba(255,255,255,0.12)'], gloss: ['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.02)'], border: 'rgba(255,255,255,0.42)', blur: 25, tint: 'light', grad: GLOW },
+  light: { colors: ['rgba(255,255,255,0.34)', 'rgba(255,255,255,0.18)'], gloss: ['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.03)'], border: 'rgba(255,255,255,0.5)', blur: 30, tint: 'light', grad: GLOW },
   // selected: glowing liquid glass
   sel: { colors: ['rgba(255,255,255,0.5)', 'rgba(255,255,255,0.22)'], gloss: ['rgba(255,255,255,0.6)', 'rgba(255,255,255,0.05)'], border: '#FFFFFF', bw: 1.5, blur: 30, tint: 'light' },
   // main buttons and active tabs: white glass
   amber: { colors: ['#FFFFFF', '#E4ECFF'], gloss: ['rgba(255,255,255,0.8)', 'rgba(255,255,255,0.05)'], border: '#FFFFFF', bw: 1, blur: 20, tint: 'light' },
-  // coloured glass tints taken from the wallpaper: they separate the menu blocks
-  navy: { colors: ['rgba(34,48,160,0.66)', 'rgba(18,28,115,0.58)'], gloss: ['rgba(255,255,255,0.16)', 'rgba(255,255,255,0.02)'], border: 'rgba(170,195,255,0.5)', blur: 30, tint: 'dark' },
-  blue: { colors: ['rgba(125,175,255,0.62)', 'rgba(60,110,240,0.46)'], gloss: ['rgba(255,255,255,0.32)', 'rgba(255,255,255,0.03)'], border: 'rgba(200,222,255,0.8)', blur: 25, tint: 'light' },
-  pink: { colors: ['rgba(255,125,175,0.62)', 'rgba(232,64,143,0.44)'], gloss: ['rgba(255,255,255,0.32)', 'rgba(255,255,255,0.03)'], border: 'rgba(255,205,225,0.8)', blur: 25, tint: 'light' },
-  violet: { colors: ['rgba(175,135,255,0.62)', 'rgba(112,72,222,0.46)'], gloss: ['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.03)'], border: 'rgba(220,200,255,0.8)', blur: 25, tint: 'light' },
-  peach: { colors: ['rgba(255,190,115,0.64)', 'rgba(255,120,80,0.44)'], gloss: ['rgba(255,255,255,0.34)', 'rgba(255,255,255,0.03)'], border: 'rgba(255,222,180,0.85)', blur: 25, tint: 'light' },
+  // aliases kept so older screens still work: all use the white-led glow glass
 };
+// the old coloured names now point to the same white-led glow glass
+VARIANT.navy = VARIANT.dark;
+VARIANT.blue = VARIANT.mid;
+VARIANT.pink = VARIANT.mid;
+VARIANT.violet = VARIANT.mid;
+VARIANT.peach = VARIANT.mid;

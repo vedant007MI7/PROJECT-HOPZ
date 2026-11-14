@@ -25,6 +25,7 @@ export default function Glass({ variant = 'dark', radius = 20, style, contentSty
       <View style={{ borderRadius: radius, overflow: 'hidden', borderWidth: v.bw || 1, borderColor: v.border, flexGrow: 1 }}>
         <BlurView intensity={v.blur} tint={v.tint || 'light'} style={StyleSheet.absoluteFill} />
         <LinearGradient colors={v.colors} style={StyleSheet.absoluteFill} />
+        {v.grad ? <LinearGradient colors={v.grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
         {v.gloss ? (
           <LinearGradient colors={v.gloss} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: '48%' }} />
         ) : null}

@@ -154,8 +154,8 @@ export default function RealMap() {
         rotateEnabled={false}
         pitchEnabled={false}
       >
-        {/* Dark CARTO street tiles replace Apple's map; the blue layer below tints them into the deep blue of the UI */}
-        <UrlTile urlTemplate="https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png" maximumZ={19} shouldReplaceMapContent zIndex={-1} />
+        {/* OpenStreetMap tiles (no API key needed) replace Apple's map; the blue layer below tints them into the deep blue of the UI */}
+        <UrlTile urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png" maximumZ={19} shouldReplaceMapContent zIndex={-1} />
         {sc.line ? (
           <>
             {/* white casing under the route so it stays readable on the dark map */}
@@ -170,7 +170,8 @@ export default function RealMap() {
         ))}
       </MapView>
       {/* Dusty Teal tint: Apple Maps has no custom style, so the map is shaded teal with a see-through layer that lets touches pass */}
-      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(43,82,221,0.5)' }} />
+      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(36,70,215,0.62)' }} />
+      <Text pointerEvents="none" style={{ position: 'absolute', left: 10, bottom: 4, fontSize: 9, color: 'rgba(255,255,255,0.7)' }}>© OpenStreetMap contributors</Text>
     </View>
   );
 }
