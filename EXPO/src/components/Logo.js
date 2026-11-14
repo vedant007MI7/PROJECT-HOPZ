@@ -1,54 +1,32 @@
-// Hopz wordmark: light almond "hop" + glowing rose "z" with a soft shadow (light = dark "hop" for light backgrounds). Drawn with SVG so it is crisp at any size.
+// Hopz wordmark in a SATURDAY-style face: wide hairline capitals, one small break in every letter.
+// White "HOP" and a teal glowing "Z". Drawn with SVG so it is crisp at any size.
 import React from 'react';
-import Svg, { Path, Circle, Defs, LinearGradient, Stop, G } from 'react-native-svg';
+import Svg, { Path, G } from 'react-native-svg';
 
-const HOP = (
-  <>
-    <Path d="M0 -150 V0 M0 -58 C0 -108 70 -108 70 -58 V0" />
-    <Circle cx="152" cy="-50" r="50" />
-    <Path d="M234 -100 V50" />
-    <Circle cx="284" cy="-50" r="50" />
-  </>
-);
-const Z = 'M366 -100 H456 L366 0 H456';
+export const HOP_PATHS = [
+  'M0 0V100M50 0V100M0 50H15M35 50H50', // H
+  'M78.7 38A25 50 0 0 1 127.3 38M78.7 62A25 50 0 0 0 127.3 62', // O
+  'M156 0V100M163 0H182A22 24 0 0 1 182 48H163', // P
+];
+export const Z_PATH = 'M234 0H284M282 6L264 41M254 59L236 94M234 100H284';
+export const TEAL = '#9DFFF0';
+export const TEAL_GLOW = '#00E6C8';
 
-export default function Logo({ width = 200, light = false, glow = true }) {
-  const h = (width * 250) / 560;
-  const c1 = light ? '#0E0B26' : '#FFFFFF';
-  const c2 = light ? '#2A2656' : '#DCE4FF';
-  const z1 = light ? '#6F7FFF' : '#FFB08A';
-  const z2 = light ? '#2456D6' : '#FF4F8B';
-  const gl = light ? '#7FA6FF' : '#FF8AB0';
-  const sh = light ? '#1E1E6E' : '#0A0550';
-  const k = light ? 0.7 : 1;
+export default function Logo({ width = 130, glow = true }) {
+  const h = (width * 116) / 300;
   return (
-    <Svg width={width} height={h} viewBox="-50 -180 560 250">
-      <Defs>
-        <LinearGradient id="lh" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="335" y2="0">
-          <Stop offset="0" stopColor={c1} />
-          <Stop offset="1" stopColor={c2} />
-        </LinearGradient>
-        <LinearGradient id="lz" gradientUnits="userSpaceOnUse" x1="366" y1="-100" x2="456" y2="0">
-          <Stop offset="0" stopColor={z1} />
-          <Stop offset="1" stopColor={z2} />
-        </LinearGradient>
-      </Defs>
-      <G fill="none" strokeLinecap="round" strokeLinejoin="round">
-        {/* soft shadow under the whole logo */}
-        <G transform="translate(0,12)">
-          <G stroke={sh} strokeOpacity={0.10 * k} strokeWidth="40">{HOP}<Path d={Z} /></G>
-          <G stroke={sh} strokeOpacity={0.14 * k} strokeWidth="32">{HOP}<Path d={Z} /></G>
-          <G stroke={sh} strokeOpacity={0.22 * k} strokeWidth="24">{HOP}<Path d={Z} /></G>
-        </G>
-        <G stroke="url(#lh)" strokeWidth="22">{HOP}</G>
+    <Svg width={width} height={h} viewBox="-8 -8 300 116">
+      <G fill="none" strokeLinecap="butt" strokeLinejoin="round">
         {glow ? (
           <>
-            <Path d={Z} stroke={gl} strokeOpacity="0.14" strokeWidth="66" />
-            <Path d={Z} stroke={gl} strokeOpacity="0.2" strokeWidth="50" />
-            <Path d={Z} stroke={gl} strokeOpacity="0.3" strokeWidth="36" />
+            <G stroke="#FFFFFF" strokeOpacity="0.10" strokeWidth="16">{HOP_PATHS.map((d) => <Path key={`a${d}`} d={d} />)}</G>
+            <G stroke="#FFFFFF" strokeOpacity="0.16" strokeWidth="11">{HOP_PATHS.map((d) => <Path key={`b${d}`} d={d} />)}</G>
+            <Path d={Z_PATH} stroke={TEAL_GLOW} strokeOpacity="0.14" strokeWidth="16" />
+            <Path d={Z_PATH} stroke={TEAL_GLOW} strokeOpacity="0.22" strokeWidth="11" />
           </>
         ) : null}
-        <Path d={Z} stroke="url(#lz)" strokeWidth="22" />
+        <G stroke="#FFFFFF" strokeWidth="6.5">{HOP_PATHS.map((d) => <Path key={d} d={d} />)}</G>
+        <Path d={Z_PATH} stroke={TEAL} strokeWidth="6.5" />
       </G>
     </Svg>
   );

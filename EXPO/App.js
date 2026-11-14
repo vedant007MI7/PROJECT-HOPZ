@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
@@ -7,7 +7,8 @@ import { Sora_600SemiBold, Sora_700Bold } from '@expo-google-fonts/sora';
 
 import { AppProvider, useApp } from './src/state';
 import { BG } from './src/theme';
-import Wallpaper from './src/components/Wallpaper';
+import Wallpaper, { Vignette } from './src/components/Wallpaper';
+import { BlurView } from 'expo-blur';
 import { API_URL } from './src/config';
 import RealMap, { ZoomButtons } from './src/components/RealMap';
 import Nav from './src/components/Nav';
@@ -25,6 +26,7 @@ const SCREENS = {
   dHome: DriverHome, dRequest: DriverRequest, dTrip: DriverTrip, dDone: DriverDone, dEarn: Earnings,
 };
 const MAP_SCREENS = ['rHome', 'rRide', 'rSearch', 'rDriver', 'rTrip', 'dHome', 'dRequest', 'dTrip'];
+const AUTH_SCREENS = ['login', 'signup', 'forgot', 'reset']; // wallpaper is blurred behind these
 const NAV_SCREENS = ['rHome', 'rActivity', 'profile', 'dHome', 'dEarn'];
 
 function mapFlags(s) {
@@ -48,12 +50,15 @@ function Root() {
     <LinearGradient colors={BG} style={{ flex: 1 }}>
       <StatusBar style="light" />
       <Wallpaper />
+      {s.screen !== 'splash' ? <View pointerEvents="none" style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.3)' }} /> : null}
+      {AUTH_SCREENS.includes(s.screen) ? <BlurView intensity={30} tint="dark" pointerEvents="none" style={StyleSheet.absoluteFill} /> : null}
       {MAP_SCREENS.includes(s.screen) ? <RealMap /> : null}
       <FadeIn key={s.screen}>
         <Screen />
       </FadeIn>
       {MAP_SCREENS.includes(s.screen) ? <ZoomButtons /> : null}
       {NAV_SCREENS.includes(s.screen) ? <Nav /> : null}
+      <Vignette />
     </LinearGradient>
   );
 }
@@ -68,7 +73,7 @@ export default function App() {
   }, []);
 
   const [loaded] = useFonts({ DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold, Sora_600SemiBold, Sora_700Bold });
-  if (!loaded) return <View style={{ flex: 1, backgroundColor: '#2B52DD' }} />;
+  if (!loaded) return <View style={{ flex: 1, backgroundColor: '#0B141C' }} />;
   return (
     <AppProvider>
       <Root />

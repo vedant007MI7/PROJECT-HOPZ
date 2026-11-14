@@ -26,7 +26,7 @@ export function Splash() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Pressable style={{ alignItems: 'center', marginTop: -40 }} onPress={() => { tag.setValue(0); btn.setValue(0); setRun((n) => n + 1); }}>
-        <HopLoader key={run} width={Math.min(W * 0.5, 220)} onLanded={landed} />
+        <HopLoader key={run} width={Math.min(W * 0.6, 260)} onLanded={landed} />
         <Animated.View style={{ opacity: tag }}>
           <T color={C.tx2} size={16} style={{ marginTop: 8 }}>Your ride is one hop away</T>
         </Animated.View>
@@ -41,7 +41,7 @@ export function Splash() {
           </>
         ) : (
           <>
-            <GlassButton title="Get started" onPress={() => go('login')} />
+            <GlassButton variant="amber" title="Get started" onPress={() => go('login')} />
             <T color={C.tx2} size={13} style={{ textAlign: 'center' }}>Rider & driver apps in one</T>
           </>
         )}
@@ -77,9 +77,9 @@ export function Login() {
   const [password, setPassword] = useState('');
   const { busy, err, submit } = useSubmit(startSession, () => api.login(email.trim(), password));
   return (
-    <ScrollView contentContainerStyle={{ paddingTop: TOP + 30, paddingHorizontal: 22, paddingBottom: 28, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+    <ScrollView contentContainerStyle={{ paddingTop: TOP, paddingHorizontal: 22, paddingBottom: 28, flexGrow: 1, justifyContent: 'center' }} keyboardShouldPersistTaps="handled">
       <View style={{ alignItems: 'center' }}>
-        <Logo width={150} />
+        <Logo width={100} />
         <H size={30} style={{ marginTop: 26, textAlign: 'center' }}>Welcome back</H>
         <T color={C.tx2} style={{ marginTop: 6, marginBottom: 6, textAlign: 'center' }}>Log in to book a hop or start driving.</T>
       </View>
@@ -92,7 +92,7 @@ export function Login() {
         <T weight="b" size={14} color={C.amber} style={{ textAlign: 'right', marginTop: 12, marginBottom: 22 }}>Forgot password?</T>
       </Pressable>
       <GlassButton title={busy ? 'Logging in…' : 'Log in'} onPress={busy ? undefined : submit} />
-      <View style={{ flex: 1, minHeight: 30 }} />
+      <View style={{ height: 28 }} />
       <Pressable onPress={() => go('signup')}>
         <T color={C.tx2} style={{ textAlign: 'center' }}>
           New to Hopz? <T weight="b" color={C.amber}>Create account</T>

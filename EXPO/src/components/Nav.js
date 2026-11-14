@@ -17,8 +17,8 @@ export default function Nav() {
     { key: 'me', label: 'Profile', icon: 'user', on: s.screen === 'profile', press: () => go('profile') },
   ];
   return (
-    <View style={{ position: 'absolute', left: 22, right: 22, bottom: 20 }}>
-      <Glass variant="navy" radius={999} contentStyle={{ flexDirection: 'row', padding: 7, gap: 4 }}>
+    <View style={{ position: 'absolute', left: 22, right: 22, bottom: 20, transformOrigin: 'center bottom', transform: [{ scale: 0.8 }] }}>
+      <Glass variant="bar" radius={999} contentStyle={{ flexDirection: 'row', padding: 7, gap: 4 }}>
         {tabs.map((t) => (
           <Pressable key={t.key} onPress={t.press} style={{ flex: 1 }}>
             {t.on ? (

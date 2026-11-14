@@ -33,7 +33,7 @@ export function DriverHome() {
           </Glass>
         </View>
       ) : null}
-      <Sheet bottom={100}>
+      <Sheet bottom={98} scale={0.8}>
         <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
           <View>
             <T size={13} weight="sb" color={C.tx2}>Today's earnings</T>
@@ -73,15 +73,15 @@ export function DriverRequest() {
   const typeName = { auto: 'Hopz Auto', mini: 'Hopz Mini', sedan: 'Hopz Sedan' }[req.vehicle_type] || '';
   const C0 = 2 * Math.PI * 28;
   const km = Number(req.distance_km || 0).toFixed(1);
-  const tile = { width: 40, height: 40, borderRadius: 13, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' };
+  const tile = { width: 34, height: 34, borderRadius: 11, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' };
   return (
-    <View style={{ flex: 1, backgroundColor: 'rgba(25,20,100,0.35)' }}>
+    <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <View pointerEvents="none" style={{ position: 'absolute', top: TOP + 34, left: 0, right: 0, alignItems: 'center' }}>
         <T weight="b" size={12} color={C.tx2} style={{ letterSpacing: 2 }}>NEW RIDE REQUEST</T>
         <View style={{ width: 124, height: 124, marginTop: 14 }}>
           <Svg width={124} height={124} viewBox="0 0 64 64" style={{ transform: [{ rotate: '-90deg' }] }}>
-            <Circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="5" />
-            <Circle cx="32" cy="32" r="28" fill="none" stroke={C.amber} strokeWidth="5" strokeLinecap="round" strokeDasharray={`${C0}`} strokeDashoffset={C0 * (1 - s.left / 15)} />
+            <Circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="5" />
+            <Circle cx="32" cy="32" r="28" fill="none" stroke="#46E68C" strokeWidth="5" strokeLinecap="round" strokeDasharray={`${C0}`} strokeDashoffset={C0 * (1 - s.left / 15)} />
           </Svg>
           <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
             <H size={34}>{s.left}</H>
@@ -91,14 +91,14 @@ export function DriverRequest() {
         <T size={14} color={C.tx2} style={{ marginTop: 2 }}>{typeName} · {req.payment_method === 'online' ? 'Online payment' : 'Cash'} · {km} km trip</T>
       </View>
       <Sheet bottom={14} contentStyle={{ gap: 10 }}>
-        <Glass variant="blue" radius={18} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }}>
+        <Glass variant="blue" radius={18} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 8, paddingHorizontal: 12 }}>
           <View style={tile}><Icon name="pin" color={C.amber} /></View>
           <View style={{ flex: 1 }}>
             <T size={12} weight="sb" color={C.tx2}>Pickup · {Number(req.pickup_distance_km || 0).toFixed(1)} km away</T>
             <T weight="b" color={C.tx} numberOfLines={2}>{req.pickup?.text}</T>
           </View>
         </Glass>
-        <Glass variant="pink" radius={18} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }}>
+        <Glass variant="pink" radius={18} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 8, paddingHorizontal: 12 }}>
           <View style={tile}><Icon name="car" color={C.amber} /></View>
           <View style={{ flex: 1 }}>
             <T size={12} weight="sb" color={C.tx2}>Drop · {km} km trip</T>
@@ -107,7 +107,7 @@ export function DriverRequest() {
         </Glass>
         <T weight="sb" size={13} color={C.tx2} style={{ marginHorizontal: 4 }}>{payLine(req)}</T>
         <Row style={{ gap: 10 }}>
-          <GlassButton variant="steel" title="Decline" style={{ flex: 1 }} onPress={declineRequest} />
+          <GlassButton variant="red" title="Decline" style={{ flex: 1 }} onPress={declineRequest} />
           <GlassButton title="Accept" style={{ flex: 1.6 }} onPress={acceptRequest} />
         </Row>
       </Sheet>
@@ -210,7 +210,7 @@ export function DriverTrip() {
         <View style={{ opacity: pinStage && s.pin.length < 4 ? 0.45 : 1 }}>
           <GlassButton title={busy ? 'Please wait…' : st.btn} onPress={advance} />
         </View>
-        {s.stage < 2 ? <GlassButton variant="steel" title="Cancel ride" height={46} small onPress={cancelDriverRide} /> : null}
+        {s.stage < 2 ? <GlassButton variant="red" title="Cancel ride" height={46} small onPress={cancelDriverRide} /> : null}
       </Sheet>
     </View>
   );

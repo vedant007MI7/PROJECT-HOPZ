@@ -25,7 +25,7 @@ export function RiderHome() {
         </View>
         <IconButton name="bell" label="Notifications" />
       </Row>
-      <Sheet bottom={100} contentStyle={{ gap: 16 }}>
+      <Sheet bottom={98} scale={0.8} contentStyle={{ gap: 16 }}>
         <PressScale onPress={() => go('rDest', { q: '', fromRide: false })}>
           <Glass variant="blue" radius={16} style={{ height: 58 }} contentStyle={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 12 }}>
             <Icon name="search" color={C.tx} />
@@ -104,7 +104,7 @@ export function Destination() {
             value={s.q}
             onChangeText={(t) => set({ q: t })}
             placeholder="Search destination"
-            placeholderTextColor="rgba(214,222,255,0.7)"
+            placeholderTextColor="rgba(255,255,255,0.42)"
             style={{ flex: 1, height: 44, borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: C.inset, color: C.tx, paddingHorizontal: 14, fontSize: 16, fontFamily: F.m }}
           />
         </Row>
@@ -175,19 +175,19 @@ export function RideOptions() {
           </Pressable>
         </View>
       </Card>
-      <Sheet bottom={14} contentStyle={{ gap: 12 }}>
+      <Sheet bottom={14} contentStyle={{ gap: 8 }}>
         <Row style={{ justifyContent: 'space-between' }}>
-          <H size={18}>Choose your ride</H>
+          <H size={17}>Choose your ride</H>
           <T size={13} color={C.tx2}>{vehicle.km.toFixed(1)} km · ~{Math.max(3, Math.round((vehicle.km / 25) * 60))} min</T>
         </Row>
-        <View style={{ gap: 8 }}>
+        <View style={{ gap: 6 }}>
           {VEH.map((v) => {
             const on = v.id === s.vehicle;
             return (
               <PressScale key={v.id} onPress={() => set({ vehicle: v.id })} to={0.98}>
-                <Glass variant={on ? 'sel' : 'mid'} radius={14} style={on ? { borderRadius: 14 } : null} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12 }}>
-                  <View style={{ width: 54, height: 44, borderRadius: 14, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon name={v.icon} size={30} color={C.tx} sw={1.6} />
+                <Glass variant={on ? 'sel' : 'mid'} radius={14} style={on ? { borderRadius: 14 } : null} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 7, paddingHorizontal: 10 }}>
+                  <View style={{ width: 48, height: 34, borderRadius: 11, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name={v.icon} size={26} color={C.tx} sw={1.6} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <T weight="b" size={16} color={C.tx}>{v.name}</T>
@@ -200,8 +200,8 @@ export function RideOptions() {
           })}
         </View>
         <Row style={{ gap: 8 }}>
-          <Chip label="Cash" on={s.payMethod === 'cash'} height={44} style={{ flex: 1 }} onPress={() => set({ payMethod: 'cash' })} />
-          <Chip label="Pay online" on={s.payMethod === 'online'} height={44} style={{ flex: 1 }} onPress={() => set({ payMethod: 'online' })} />
+          <Chip label="Cash" on={s.payMethod === 'cash'} height={38} style={{ flex: 1 }} onPress={() => set({ payMethod: 'cash' })} />
+          <Chip label="Pay online" on={s.payMethod === 'online'} height={38} style={{ flex: 1 }} onPress={() => set({ payMethod: 'online' })} />
         </Row>
         <GlassButton title={booking ? 'Booking…' : `Confirm ${vehicle.name} · ₹${vehicle.fare}`} onPress={booking ? undefined : async () => { setBooking(true); await requestRide(); setBooking(false); }} />
       </Sheet>
@@ -239,7 +239,7 @@ export function Searching() {
           <T color={C.tx2}>{s.dest}</T>
           <Price>{vehicle.fare}</Price>
         </Row>
-        <GlassButton variant="steel" title="Cancel request" onPress={cancelRide} />
+        <GlassButton variant="red" title="Cancel request" onPress={cancelRide} />
       </Sheet>
     </View>
   );
@@ -284,7 +284,7 @@ export function DriverEnRoute() {
           <IconButton name="chat" label="Message driver" size={56} />
         </Row>
         <Row style={{ gap: 10 }}>
-          <GlassButton variant="steel" title="Cancel ride" height={52} small style={{ flex: 1 }} onPress={cancelRide} />
+          <GlassButton variant="red" title="Cancel ride" height={52} small style={{ flex: 1 }} onPress={cancelRide} />
         </Row>
       </Sheet>
     </View>

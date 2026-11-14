@@ -18,7 +18,7 @@ export function PressScale({ onPress, children, style, to = 0.96, disabled }) {
 }
 
 // ---------- buttons ----------
-export function GlassButton({ title, onPress, variant = 'amber', icon, height = 56, style, small }) {
+export function GlassButton({ title, onPress, variant = 'green', icon, height = 48, style, small }) {
   const amber = variant === 'amber';
   return (
     <PressScale onPress={onPress} style={style}>
@@ -41,7 +41,7 @@ export function IconButton({ name, onPress, label, size = 46, children, variant 
   return (
     <PressScale onPress={onPress} to={0.92}>
       <Glass variant={variant} radius={size / 2} style={{ width: size, height: size }} contentStyle={{ alignItems: 'center', justifyContent: 'center' }}>
-        {children || <Icon name={name} color={variant === 'amber' ? C.amberText : C.tx} />}
+        {children || <Icon name={name} color={C.tx} />}
       </Glass>
     </PressScale>
   );
@@ -91,22 +91,22 @@ export function Field({ label, icon, style, ...props }) {
       <Text style={s.fieldLabel}>{label}</Text>
       <Glass variant="mid" radius={16} style={{ height: 54 }} contentStyle={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, gap: 10 }}>
         {icon ? <Icon name={icon} size={20} color={C.tx2} /> : null}
-        <TextInput placeholderTextColor="rgba(214,222,255,0.7)" style={[{ flex: 1, height: 54, color: C.tx, fontSize: 16, fontFamily: F.m }, style]} {...props} />
+        <TextInput placeholderTextColor="rgba(255,255,255,0.42)" style={[{ flex: 1, height: 54, color: C.tx, fontSize: 16, fontFamily: F.m }, style]} {...props} />
       </Glass>
     </View>
   );
 }
 
 // ---------- text helpers ----------
-export const H = ({ children, size = 24, style }) => <Text style={[{ fontFamily: F.hd, color: C.tx, fontSize: size, letterSpacing: -0.4 }, style]}>{children}</Text>;
+export const H = ({ children, size = 24, style }) => <Text style={[{ fontFamily: F.hd, color: C.tx, fontSize: size, letterSpacing: -0.4, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 5, textShadowOffset: { width: 0, height: 1 } }, style]}>{children}</Text>;
 export const T = ({ children, size = 15, color = C.tx, weight = 'r', style, ...p }) => (
-  <Text style={[{ fontFamily: F[weight], color, fontSize: size }, style]} {...p}>
+  <Text style={[{ fontFamily: F[weight], color, fontSize: size, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 5, textShadowOffset: { width: 0, height: 1 } }, style]} {...p}>
     {children}
   </Text>
 );
 // Prices use the app text font (DM Sans) and sit 5px off the right edge
 export const Price = ({ children, size = 16, style, color = C.tx }) => (
-  <Text style={[{ fontFamily: F.b, color, fontSize: size, marginRight: 5 }, style]}>₹{children}</Text>
+  <Text style={[{ fontFamily: F.b, color, fontSize: size, marginRight: 5, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 5, textShadowOffset: { width: 0, height: 1 } }, style]}>₹{children}</Text>
 );
 
 // ---------- screen entrance ----------
@@ -123,7 +123,7 @@ export function FadeIn({ children }) {
 }
 
 // ---------- bottom sheet that slides up ----------
-export function Sheet({ bottom = 14, children, style, contentStyle }) {
+export function Sheet({ bottom = 14, children, style, contentStyle, scale = 1 }) {
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(v, { toValue: 1, duration: 520, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
@@ -131,11 +131,11 @@ export function Sheet({ bottom = 14, children, style, contentStyle }) {
   return (
     <Animated.View
       style={[
-        { position: 'absolute', left: 12, right: 12, bottom, opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [40, 0] }) }] },
+        { position: 'absolute', left: 12, right: 12, bottom, opacity: v, transformOrigin: 'center bottom', transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [40, 0] }) }, { scale }] },
         style,
       ]}
     >
-      <Glass variant="navy" radius={22} contentStyle={[{ padding: 18, gap: 14 }, contentStyle]}>
+      <Glass variant="panel" radius={22} contentStyle={[{ padding: 13, gap: 10 }, contentStyle]}>
         {children}
       </Glass>
     </Animated.View>
@@ -158,9 +158,9 @@ const s = StyleSheet.create({
   btnTxt: { fontFamily: F.b, fontSize: 15 },
   amberTxt: { color: C.amberText },
   steelTxt: { color: C.tx },
-  chipTxt: { fontFamily: F.b, fontSize: 14, color: C.tx },
+  chipTxt: { fontFamily: F.b, fontSize: 14, color: C.tx, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 5, textShadowOffset: { width: 0, height: 1 } },
   seg: { flexDirection: 'row', backgroundColor: C.inset, borderRadius: 16, padding: 4, gap: 4, borderWidth: 1, borderColor: C.line },
   segTxt: { fontFamily: F.b, fontSize: 14 },
-  fieldLabel: { fontFamily: F.b, fontSize: 13, color: C.tx2 },
+  fieldLabel: { fontFamily: F.b, fontSize: 13, color: C.tx2, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 5, textShadowOffset: { width: 0, height: 1 } },
   input: { height: 52, borderRadius: 14, borderWidth: 1, borderColor: C.line, backgroundColor: C.inset, color: C.tx, paddingHorizontal: 16, fontSize: 16, fontFamily: F.m },
 });

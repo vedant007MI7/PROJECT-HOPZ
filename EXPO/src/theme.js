@@ -1,26 +1,28 @@
-// Hopz design tokens: macOS Big Sur look. Blue-to-violet wallpaper with pink/orange waves, frosted glass panels,
-// white text, white-glass buttons and glowing glass selections.
+// Hopz design tokens: the PC desktop theme. Wallpaper waves, translucent black glass, white text,
+// white glow for common selections, green glow for chosen / confirm, red glow for cancel.
 import { Platform, StatusBar } from 'react-native';
 
 export const C = {
   tx: '#FFFFFF', // headings and main text
-  tx2: '#D6DEFF', // secondary text and labels
-  amber: '#FFFFFF', // main accent (kept the old name): rings, prices, links
-  amberText: '#1B3FC4', // blue text on the white-glass buttons
-  steel: '#A9C0FF',
+  tx2: '#C9C9CF', // secondary text and labels
+  amber: '#FFFFFF', // accent (kept the old name): white
+  amberText: '#FFFFFF', // text on glass buttons
+  steel: '#46E68C', // green accent: online dot, rings, bars
   steelText: '#FFFFFF',
-  gold: '#FFD2A0',
-  bgs: '#2B52DD',
+  gold: '#FFFFFF',
+  bgs: '#0B141C',
   road: '#FFFFFF',
-  blk: '#5C7DEB',
-  water: '#1E3DB0',
-  park: '#2F55D6',
-  rim: 'rgba(255,255,255,0.38)',
-  inset: 'rgba(255,255,255,0.16)',
-  line: 'rgba(255,255,255,0.28)',
-  soft: 'rgba(255,255,255,0.18)',
-  err: '#FFC2B8',
-  splash: '#2B52DD',
+  blk: '#101418',
+  water: '#0A1018',
+  park: '#12181E',
+  rim: 'rgba(255,255,255,0.28)',
+  inset: 'rgba(255,255,255,0.07)',
+  line: 'rgba(255,255,255,0.16)',
+  soft: 'rgba(255,255,255,0.09)',
+  err: '#FF6B6B',
+  splash: '#0B141C',
+  green: '#46E68C',
+  red: '#FF4646',
 };
 
 export const F = {
@@ -32,30 +34,37 @@ export const F = {
   b: 'DMSans_700Bold',
 };
 
-export const BG = ['#1F6BEA', '#2B52DD', '#4B3FD8', '#6A3CD2'];
+export const BG = ['#0B141C', '#101418', '#1A0E0C'];
 
 export const TOP = Platform.OS === 'ios' ? 58 : (StatusBar.currentHeight || 24) + 18;
 
 // Glass recipes: gradient fill + gloss on the top half + rim colour + blur strength + blur tint
-// Soft colour glow taken from the wallpaper (blue, violet, pink, orange), laid under the white glass
-const GLOW = ['rgba(90,150,255,0.34)', 'rgba(165,110,255,0.30)', 'rgba(255,95,155,0.30)', 'rgba(255,165,85,0.30)'];
+// Glass recipes: black translucent body + faint gloss + rim colour + blur. `glow` is the colour of the outer glow.
+const BODY = ['rgba(28,28,32,0.56)', 'rgba(8,8,10,0.5)'];
+const GLOSS = ['rgba(255,255,255,0.10)', 'rgba(255,255,255,0.01)'];
 
 export const VARIANT = {
-  // frosted glass panels
-  dark: { colors: ['rgba(255,255,255,0.26)', 'rgba(255,255,255,0.10)'], gloss: ['rgba(255,255,255,0.26)', 'rgba(255,255,255,0.02)'], border: 'rgba(255,255,255,0.38)', blur: 30, tint: 'light', grad: GLOW },
-  mid: { colors: ['rgba(255,255,255,0.24)', 'rgba(255,255,255,0.10)'], gloss: ['rgba(255,255,255,0.22)', 'rgba(255,255,255,0.02)'], border: 'rgba(255,255,255,0.36)', blur: 30, tint: 'light', grad: GLOW },
-  flat: { colors: ['rgba(255,255,255,0.20)', 'rgba(255,255,255,0.09)'], gloss: null, border: 'rgba(255,255,255,0.30)', blur: 25, tint: 'light' },
-  steel: { colors: ['rgba(255,255,255,0.22)', 'rgba(255,255,255,0.12)'], gloss: ['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.02)'], border: 'rgba(255,255,255,0.42)', blur: 25, tint: 'light', grad: GLOW },
-  light: { colors: ['rgba(255,255,255,0.34)', 'rgba(255,255,255,0.18)'], gloss: ['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.03)'], border: 'rgba(255,255,255,0.5)', blur: 30, tint: 'light', grad: GLOW },
-  // selected: glowing liquid glass
-  sel: { colors: ['rgba(255,255,255,0.5)', 'rgba(255,255,255,0.22)'], gloss: ['rgba(255,255,255,0.6)', 'rgba(255,255,255,0.05)'], border: '#FFFFFF', bw: 1.5, blur: 30, tint: 'light' },
-  // main buttons and active tabs: white glass
-  amber: { colors: ['#FFFFFF', '#E4ECFF'], gloss: ['rgba(255,255,255,0.8)', 'rgba(255,255,255,0.05)'], border: '#FFFFFF', bw: 1, blur: 20, tint: 'light' },
-  // aliases kept so older screens still work: all use the white-led glow glass
+  dark: { colors: BODY, gloss: GLOSS, border: 'rgba(255,255,255,0.14)', blur: 35, tint: 'dark' },
+  mid: { colors: ['rgba(34,34,38,0.52)', 'rgba(12,12,14,0.46)'], gloss: GLOSS, border: 'rgba(255,255,255,0.14)', blur: 35, tint: 'dark' },
+  flat: { colors: ['rgba(30,30,34,0.48)', 'rgba(10,10,12,0.44)'], gloss: null, border: 'rgba(255,255,255,0.11)', blur: 30, tint: 'dark' },
+  steel: { colors: ['rgba(46,46,50,0.52)', 'rgba(20,20,22,0.48)'], gloss: GLOSS, border: 'rgba(255,255,255,0.18)', blur: 30, tint: 'dark' },
+  light: { colors: ['rgba(50,50,54,0.48)', 'rgba(22,22,24,0.44)'], gloss: GLOSS, border: 'rgba(255,255,255,0.2)', blur: 30, tint: 'dark' },
+  // chosen option: green glow
+  sel: { colors: BODY, gloss: GLOSS, border: '#46E68C', bw: 1.5, blur: 35, tint: 'dark' },
+  green: { colors: BODY, gloss: GLOSS, border: '#46E68C', bw: 1.5, blur: 35, tint: 'dark' },
+  // cancel / decline: red glow
+  red: { colors: BODY, gloss: GLOSS, border: '#FF4646', bw: 1.5, blur: 35, tint: 'dark' },
+  // common selection (tabs, toggles, chips, avatar): white glow
+  amber: { colors: ['rgba(60,60,64,0.54)', 'rgba(24,24,28,0.5)'], gloss: ['rgba(255,255,255,0.16)', 'rgba(255,255,255,0.02)'], border: 'rgba(255,255,255,0.9)', bw: 1.5, blur: 35, tint: 'dark', glow: '#FFFFFF', inner: 'rgba(255,255,255,0.16)' },
 };
-// the old coloured names now point to the same white-led glow glass
+// big menu windows (bottom sheet, nav bar): dark liquid glass with a shiny sheen and only a faint (about 8%) white glow
+VARIANT.panel = { colors: ['rgba(30,30,34,0.52)', 'rgba(8,8,10,0.46)'], gloss: ['rgba(255,255,255,0.12)', 'rgba(255,255,255,0.01)'], border: 'rgba(255,255,255,0.3)', blur: 40, tint: 'dark', glow: '#FFFFFF', glowOpacity: 0.08, glowRadius: 22, shine: true };
+// bottom menu bar: more see-through than the buttons, same shiny glass
+VARIANT.bar = { colors: ['rgba(30,30,34,0.3)', 'rgba(8,8,10,0.24)'], gloss: ['rgba(255,255,255,0.12)', 'rgba(255,255,255,0.01)'], border: 'rgba(255,255,255,0.26)', blur: 30, tint: 'dark', glow: '#FFFFFF', glowOpacity: 0.08, glowRadius: 22, shine: true };
+// old coloured names point to the plain black glass
 VARIANT.navy = VARIANT.dark;
 VARIANT.blue = VARIANT.mid;
 VARIANT.pink = VARIANT.mid;
 VARIANT.violet = VARIANT.mid;
 VARIANT.peach = VARIANT.mid;
+VARIANT.white = VARIANT.amber;
