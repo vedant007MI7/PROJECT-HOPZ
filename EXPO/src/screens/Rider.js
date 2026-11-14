@@ -28,13 +28,13 @@ export function RiderHome() {
       <Sheet bottom={100} contentStyle={{ gap: 16 }}>
         <PressScale onPress={() => go('rDest', { q: '', fromRide: false })}>
           <Glass variant="steel" radius={16} style={{ height: 58 }} contentStyle={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 12 }}>
-            <Icon name="search" color="#fff" />
-            <T weight="b" size={16} color="#fff">Where to?</T>
+            <Icon name="search" color={C.tx} />
+            <T weight="b" size={16} color={C.tx}>Where to?</T>
           </Glass>
         </PressScale>
         <Row style={{ gap: 10 }}>
           {PLACES.map((p) => (
-            <Chip key={p.label} label={p.label} height={46} style={{ flex: 1 }} icon={<Icon name="pin" size={18} color="#fff" />} onPress={() => go('rRide', { dest: p.dest })} />
+            <Chip key={p.label} label={p.label} height={46} style={{ flex: 1 }} icon={<Icon name="pin" size={18} color={C.tx} />} onPress={() => go('rRide', { dest: p.dest })} />
           ))}
         </Row>
         <Glass variant="light" radius={16} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14 }}>
@@ -104,8 +104,8 @@ export function Destination() {
             value={s.q}
             onChangeText={(t) => set({ q: t })}
             placeholder="Search destination"
-            placeholderTextColor="rgba(186,199,203,0.7)"
-            style={{ flex: 1, height: 44, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(220,236,246,0.24)', backgroundColor: C.inset, color: C.tx, paddingHorizontal: 14, fontSize: 16, fontFamily: F.m }}
+            placeholderTextColor="rgba(122,99,80,0.6)"
+            style={{ flex: 1, height: 44, borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: C.inset, color: C.tx, paddingHorizontal: 14, fontSize: 16, fontFamily: F.m }}
           />
         </Row>
       </Card>
@@ -119,7 +119,7 @@ export function Destination() {
             {found.map((d) => (
               <PressScale key={d.id || d.name} onPress={() => pickFound(d)} to={0.98}>
                 <Glass variant="flat" radius={20} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 13 }}>
-                  <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: 'rgba(95,140,137,0.20)', alignItems: 'center', justifyContent: 'center' }}>
                     <Icon name="pin" />
                   </View>
                   <View style={{ flex: 1 }}>
@@ -136,7 +136,7 @@ export function Destination() {
         {list.map((d) => (
           <PressScale key={d.name} onPress={() => pick(d.name)} to={0.98}>
             <Glass variant="flat" radius={20} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 13 }}>
-              <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: 'rgba(95,140,137,0.20)', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="pin" />
               </View>
               <View style={{ flex: 1 }}>
@@ -162,7 +162,7 @@ export function RideOptions() {
         <IconButton name="back" label="Back" size={40} onPress={() => go('rHome')} />
         <View style={{ alignItems: 'center', gap: 3 }}>
           <View style={dot(C.amber)} />
-          <View style={{ width: 2, height: 14, backgroundColor: 'rgba(220,236,246,0.24)' }} />
+          <View style={{ width: 2, height: 14, backgroundColor: C.line }} />
           <View style={[dot(C.steel), { borderRadius: 3 }]} />
         </View>
         <View style={{ flex: 1, gap: 10 }}>
@@ -185,13 +185,13 @@ export function RideOptions() {
             const on = v.id === s.vehicle;
             return (
               <PressScale key={v.id} onPress={() => set({ vehicle: v.id })} to={0.98}>
-                <Glass variant={on ? 'steel' : 'mid'} radius={14} style={on ? { borderRadius: 14 } : null} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12 }}>
-                  <View style={{ width: 54, height: 44, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon name={v.icon} size={30} color="#fff" sw={1.6} />
+                <Glass variant={on ? 'sel' : 'mid'} radius={14} style={on ? { borderRadius: 14 } : null} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12 }}>
+                  <View style={{ width: 54, height: 44, borderRadius: 14, backgroundColor: 'rgba(95,140,137,0.22)', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name={v.icon} size={30} color={C.tx} sw={1.6} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <T weight="b" size={16} color="#fff">{v.name}</T>
-                    <T size={13} color="#DCE6EA">{v.sub}</T>
+                    <T weight="b" size={16} color={C.tx}>{v.name}</T>
+                    <T size={13} color={C.tx2}>{v.sub}</T>
                   </View>
                   <Price size={16}>{estimate(v.id)}</Price>
                 </Glass>
@@ -232,8 +232,8 @@ export function Searching() {
           </View>
         </Row>
         <View style={{ gap: 8 }}>
-          <View style={{ height: 12, borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.1)' }} />
-          <View style={{ height: 12, width: '70%', borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.1)' }} />
+          <View style={{ height: 12, borderRadius: 6, backgroundColor: 'rgba(95,140,137,0.20)' }} />
+          <View style={{ height: 12, width: '70%', borderRadius: 6, backgroundColor: 'rgba(95,140,137,0.20)' }} />
         </View>
         <Row style={{ justifyContent: 'space-between' }}>
           <T color={C.tx2}>{s.dest}</T>
@@ -308,7 +308,7 @@ export function Trip() {
           <H size={26}>{mins} min</H>
           <T size={14} color={C.tx2}>{km} km left</T>
         </Row>
-        <View style={{ height: 8, borderRadius: 8, backgroundColor: 'rgba(8,18,26,0.5)', overflow: 'hidden' }}>
+        <View style={{ height: 8, borderRadius: 8, backgroundColor: 'rgba(95,140,137,0.22)', overflow: 'hidden' }}>
           <View style={{ height: '100%', width: `${s.progress}%`, borderRadius: 8, backgroundColor: C.amber }} />
         </View>
         <Row style={{ gap: 12 }}>
@@ -322,8 +322,8 @@ export function Trip() {
           <Price size={16}>{vehicle.fare}</Price>
         </Row>
         <Row style={{ gap: 10 }}>
-          <GlassButton variant="steel" title="Share trip" height={52} small style={{ flex: 1 }} icon={<Icon name="share" size={18} color="#fff" />} />
-          <GlassButton variant="steel" title="Safety" height={52} small style={{ flex: 1 }} icon={<Icon name="shield" size={18} color="#fff" />} />
+          <GlassButton variant="steel" title="Share trip" height={52} small style={{ flex: 1 }} icon={<Icon name="share" size={18} color={C.tx} />} />
+          <GlassButton variant="steel" title="Safety" height={52} small style={{ flex: 1 }} icon={<Icon name="shield" size={18} color={C.tx} />} />
         </Row>
       </Sheet>
     </View>
@@ -358,7 +358,7 @@ export function TripDone() {
       <Card style={{ width: '100%', marginTop: 22 }} contentStyle={{ padding: 18, gap: 10 }}>
         <Row style={{ justifyContent: 'space-between' }}><T color={C.tx2}>Base fare</T><Price size={15} style={{ color: C.tx2, fontFamily: F.r }}>{base}</Price></Row>
         <Row style={{ justifyContent: 'space-between' }}><T color={C.tx2}>Distance ({vehicle.km.toFixed(1)} km)</T><Price size={15} style={{ color: C.tx2, fontFamily: F.r }}>{dist}</Price></Row>
-        <View style={{ height: 1, backgroundColor: 'rgba(220,236,246,0.24)' }} />
+        <View style={{ height: 1, backgroundColor: C.line }} />
         <Row style={{ justifyContent: 'space-between' }}><T weight="b">Total</T><Price size={24}>{fare}</Price></Row>
       </Card>
       {online && !paid ? (

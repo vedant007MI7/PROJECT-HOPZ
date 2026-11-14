@@ -45,7 +45,7 @@ export function Activity() {
       {err ? <Empty>{err}</Empty> : data && !trips.length ? <Empty>No completed trips yet.</Empty> : null}
       {trips.map((r) => (
         <Card key={r.id} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-          <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(95,140,137,0.20)', alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="pin" />
           </View>
           <View style={{ flex: 1 }}>

@@ -41,7 +41,7 @@ export function IconButton({ name, onPress, label, size = 46, children, variant 
   return (
     <PressScale onPress={onPress} to={0.92}>
       <Glass variant={variant} radius={size / 2} style={{ width: size, height: size }} contentStyle={{ alignItems: 'center', justifyContent: 'center' }}>
-        {children || <Icon name={name} color="#fff" />}
+        {children || <Icon name={name} color={variant === 'amber' ? '#fff' : C.tx} />}
       </Glass>
     </PressScale>
   );
@@ -50,9 +50,9 @@ export function IconButton({ name, onPress, label, size = 46, children, variant 
 export function Chip({ label, icon, on, onPress, style, height = 42 }) {
   return (
     <PressScale onPress={onPress} to={0.95} style={style}>
-      <Glass variant={on ? 'light' : 'steel'} radius={999} style={{ height }} contentStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 8 }}>
+      <Glass variant={on ? 'amber' : 'steel'} radius={999} style={{ height }} contentStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 8 }}>
         {icon}
-        <Text numberOfLines={1} style={[s.chipTxt, on && { color: C.steelText, textShadowColor: 'transparent' }]}>
+        <Text numberOfLines={1} style={[s.chipTxt, on && { color: '#fff' }]}>
           {label}
         </Text>
       </Glass>
@@ -74,7 +74,7 @@ export function Seg({ options, value, onChange }) {
               </Glass>
             ) : (
               <View style={{ height: 46, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={[s.segTxt, { color: '#C4D0D4' }]}>{o.label}</Text>
+                <Text style={[s.segTxt, { color: C.tx2 }]}>{o.label}</Text>
               </View>
             )}
           </Pressable>
@@ -89,7 +89,7 @@ export function Field({ label, ...props }) {
   return (
     <View style={{ gap: 6 }}>
       <Text style={s.fieldLabel}>{label}</Text>
-      <TextInput placeholderTextColor="rgba(186,199,203,0.7)" style={s.input} {...props} />
+      <TextInput placeholderTextColor="rgba(122,99,80,0.6)" style={s.input} {...props} />
     </View>
   );
 }
@@ -153,11 +153,11 @@ export function Row({ children, style }) {
 
 const s = StyleSheet.create({
   btnTxt: { fontFamily: F.b, fontSize: 15 },
-  amberTxt: { color: '#fff', textShadowColor: 'rgba(100,40,0,0.85)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 1 },
-  steelTxt: { color: '#fff', textShadowColor: 'rgba(0,18,36,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
-  chipTxt: { fontFamily: F.b, fontSize: 14, color: '#fff', textShadowColor: 'rgba(0,18,36,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
-  seg: { flexDirection: 'row', backgroundColor: C.inset, borderRadius: 16, padding: 4, gap: 4, borderWidth: 1, borderColor: 'rgba(220,236,246,0.14)' },
+  amberTxt: { color: '#fff', textShadowColor: 'rgba(30,70,68,0.55)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 1 },
+  steelTxt: { color: C.tx },
+  chipTxt: { fontFamily: F.b, fontSize: 14, color: C.tx },
+  seg: { flexDirection: 'row', backgroundColor: C.inset, borderRadius: 16, padding: 4, gap: 4, borderWidth: 1, borderColor: C.line },
   segTxt: { fontFamily: F.b, fontSize: 14 },
-  fieldLabel: { fontFamily: F.b, fontSize: 13, color: '#C4D0D4' },
-  input: { height: 52, borderRadius: 14, borderWidth: 1, borderColor: 'rgba(220,236,246,0.24)', backgroundColor: C.inset, color: C.tx, paddingHorizontal: 16, fontSize: 16, fontFamily: F.m },
+  fieldLabel: { fontFamily: F.b, fontSize: 13, color: C.tx2 },
+  input: { height: 52, borderRadius: 14, borderWidth: 1, borderColor: C.line, backgroundColor: C.inset, color: C.tx, paddingHorizontal: 16, fontSize: 16, fontFamily: F.m },
 });

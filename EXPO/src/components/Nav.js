@@ -3,7 +3,7 @@ import { View, Text, Pressable } from 'react-native';
 import Glass from './Glass';
 import Icon from './Icons';
 import { useApp } from '../state';
-import { F } from '../theme';
+import { C, F } from '../theme';
 
 // Floating oval liquid-glass island: Home / Activity (or Earnings) / Profile
 export default function Nav() {
@@ -24,12 +24,12 @@ export default function Nav() {
             {t.on ? (
               <Glass variant="amber" radius={999} style={{ height: 58 }} contentStyle={s2.tab}>
                 <Icon name={t.icon} color="#fff" size={22} />
-                <Text style={[s2.lbl, { color: '#fff', textShadowColor: 'rgba(100,40,0,0.85)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 1 }]}>{t.label}</Text>
+                <Text style={[s2.lbl, { color: '#fff', textShadowColor: 'rgba(30,70,68,0.55)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 1 }]}>{t.label}</Text>
               </Glass>
             ) : (
               <View style={[s2.tab, { height: 58 }]}>
-                <Icon name={t.icon} color="#DCE6EA" size={22} />
-                <Text style={[s2.lbl, { color: '#DCE6EA' }]}>{t.label}</Text>
+                <Icon name={t.icon} color={C.tx2} size={22} />
+                <Text style={[s2.lbl, { color: C.tx2 }]}>{t.label}</Text>
               </View>
             )}
           </Pressable>

@@ -1,26 +1,26 @@
-# Hopz app (Expo / React Native)
+# Hopz app
 
-All screens on sample data (no backend yet). Rider + driver flows, liquid-glass UI.
+React Native (Expo SDK 58) app for riders and drivers. It talks to the Hopz backend in [`../BACKEND`](../BACKEND).
 
 ## Run
-```
-npx create-expo-app@latest hopz-app --template blank
-cd hopz-app
-npx expo install expo-linear-gradient expo-blur react-native-svg expo-font expo-status-bar @expo-google-fonts/dm-sans @expo-google-fonts/sora
-```
-Then copy `App.js` and the `src/` folder from this zip over the new project (replace App.js), and:
-```
-npx expo start
-```
-Scan the QR with Expo Go. Open the folder in VS Code and edit; the phone reloads on save.
 
-## Layout
-- `src/theme.js` colours, fonts, glass recipes
-- `src/state.js` sample data + app state (replace with API calls later)
-- `src/components/` Glass, UI, Icons, Map, Nav
-- `src/screens/` Entry, Rider, Driver, Lists
+1. `npm install`
+2. Copy `.env.example` to `.env` and fill it in (below).
+3. `npx expo start` (add `-c` after changing `.env`), then open it in Expo Go on a phone.
 
-## Logo and app icon
-- `src/components/HopLoader.js` is the loading-screen animation (Z hops over h-o-p squeezing each letter, lands, glows). `<HopLoader loop />` repeats while loading; on the splash it plays once. Tap the logo on the splash to replay.
-- `src/components/Logo.js` is the wordmark (use `<Logo width={200} />`, `light` prop for light backgrounds).
-- `assets/` has icon, adaptive-icon, splash-icon and favicon. Copy them into your project's `assets/` folder and set the paths in `app.json` (see `assets/README.txt`).
+## Environment (`.env`)
+
+| Name | What it is |
+| --- | --- |
+| `EXPO_PUBLIC_API_URL` | The backend address, ending in `/api`. Without it the app uses your computer's address on port 3000. |
+| `EXPO_PUBLIC_OLA_MAPS_KEY` | Ola Maps API key, used for destination search. Without it, only the built-in suggestions work. |
+
+`.env` is not committed. Anything starting with `EXPO_PUBLIC_` is readable inside the app, so never put a real secret in it.
+
+## What is where
+
+- `src/state.js`: app state, GPS, polling, and every action (book, accept, pay, log out).
+- `src/api.js`: every call to the backend, with one error message for no connection.
+- `src/screens/`: Entry (splash, login, signup, password reset), Rider, Driver, Lists (activity, earnings, profile), Pay (Razorpay checkout in a WebView).
+- `src/components/RealMap.js`: the map behind the screens, with pins and the road route.
+- `src/places.js` and `src/routes.js`: destination search (Ola Maps) and road routes (OSRM), each in one file so the provider can be swapped.

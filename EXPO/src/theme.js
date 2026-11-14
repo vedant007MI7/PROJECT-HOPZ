@@ -1,20 +1,23 @@
-// Hopz design tokens (Midnight Slate + Amber), ported from the prototype.
+// Hopz design tokens: Almond Milk (60%) + Dusty Teal (30%) + small gold, brown and dark grey touches.
 import { Platform, StatusBar } from 'react-native';
 
 export const C = {
-  tx: '#EAEDEC',
-  tx2: '#BAC7CB',
-  amber: '#F2A65A',
-  amberText: '#14202B',
-  steel: '#8FB3CC',
-  steelText: '#0F1C26',
-  bgs: '#172A3A',
-  road: '#2C4356',
-  blk: '#1D3243',
-  water: '#12283A',
-  park: '#27473F',
-  rim: 'rgba(220,236,246,0.24)',
-  inset: 'rgba(8,18,26,0.45)',
+  tx: '#363F3F', // dark grey text
+  tx2: '#7A6350', // soft brown, secondary text
+  amber: '#5F8C89', // main accent (kept the old name): Dusty Teal
+  amberText: '#FFFFFF',
+  steel: '#8DBDB8',
+  steelText: '#363F3F',
+  gold: '#D8A93A', // small yellow touches: route line, driver car
+  bgs: '#3E4848',
+  road: '#FBF6EE',
+  blk: '#E4D9CB',
+  water: '#CFE0DE',
+  park: '#C8D9CF',
+  rim: 'rgba(255,255,255,0.75)',
+  inset: 'rgba(95,140,137,0.16)',
+  line: 'rgba(95,140,137,0.30)',
+  splash: '#2F4D4B', // darker Dusty Teal behind the logo animation
 };
 
 export const F = {
@@ -26,16 +29,17 @@ export const F = {
   b: 'DMSans_700Bold',
 };
 
-export const BG = ['#1D3142', '#172A3A', '#12212E'];
+export const BG = ['#F3ECE1', '#EDE4D8', '#E4D9CB'];
 
 export const TOP = Platform.OS === 'ios' ? 58 : (StatusBar.currentHeight || 24) + 18;
 
-// Glass recipes: gradient fill + gloss on the top half + rim colour + blur strength
+// Glass recipes: gradient fill + gloss on the top half + rim colour + blur strength + blur tint
 export const VARIANT = {
-  dark: { colors: ['rgba(44,68,88,0.62)', 'rgba(20,36,50,0.74)'], gloss: ['rgba(255,255,255,0.17)', 'rgba(255,255,255,0.03)'], border: 'rgba(220,236,246,0.24)', blur: 40 },
-  mid: { colors: ['rgba(84,118,144,0.46)', 'rgba(50,78,100,0.52)'], gloss: ['rgba(255,255,255,0.18)', 'rgba(255,255,255,0.03)'], border: 'rgba(220,236,246,0.24)', blur: 30 },
-  steel: { colors: ['rgba(150,190,215,0.50)', 'rgba(78,112,138,0.66)'], gloss: ['rgba(255,255,255,0.34)', 'rgba(255,255,255,0.05)'], border: 'rgba(215,235,248,0.42)', blur: 30 },
-  amber: { colors: ['rgba(255,190,120,0.62)', 'rgba(228,132,40,0.80)', 'rgba(188,98,18,0.90)'], gloss: ['rgba(255,255,255,0.46)', 'rgba(255,255,255,0.08)'], border: 'rgba(255,228,195,0.6)', blur: 20 },
-  light: { colors: ['rgba(215,233,245,0.80)', 'rgba(160,192,214,0.78)'], gloss: ['rgba(255,255,255,0.55)', 'rgba(255,255,255,0.12)'], border: 'rgba(255,255,255,0.6)', blur: 30 },
-  flat: { colors: ['rgba(24,42,58,0.62)', 'rgba(24,42,58,0.62)'], gloss: null, border: 'rgba(220,236,246,0.12)', blur: 20 },
+  dark: { colors: ['rgba(255,250,242,0.66)', 'rgba(237,228,216,0.50)'], gloss: ['rgba(255,255,255,0.55)', 'rgba(255,255,255,0.05)'], border: 'rgba(255,255,255,0.8)', blur: 40, tint: 'light' },
+  mid: { colors: ['rgba(143,189,184,0.42)', 'rgba(95,140,137,0.24)'], gloss: ['rgba(255,255,255,0.45)', 'rgba(255,255,255,0.04)'], border: 'rgba(255,255,255,0.6)', blur: 30, tint: 'light' },
+  steel: { colors: ['rgba(150,196,191,0.50)', 'rgba(95,140,137,0.30)'], gloss: ['rgba(255,255,255,0.5)', 'rgba(255,255,255,0.05)'], border: 'rgba(255,255,255,0.65)', blur: 30, tint: 'light' },
+  sel: { colors: ['rgba(150,196,191,0.62)', 'rgba(95,140,137,0.36)'], gloss: ['rgba(255,255,255,0.5)', 'rgba(255,255,255,0.05)'], border: '#5F8C89', bw: 2.5, blur: 30, tint: 'light' },
+  amber: { colors: ['rgba(125,176,172,0.96)', 'rgba(95,140,137,0.98)', 'rgba(78,121,118,1)'], gloss: ['rgba(255,255,255,0.38)', 'rgba(255,255,255,0.05)'], border: 'rgba(255,255,255,0.6)', blur: 20, tint: 'light' },
+  light: { colors: ['rgba(150,196,191,0.62)', 'rgba(95,140,137,0.38)'], gloss: ['rgba(255,255,255,0.5)', 'rgba(255,255,255,0.08)'], border: 'rgba(255,255,255,0.7)', blur: 30, tint: 'light' },
+  flat: { colors: ['rgba(143,189,184,0.30)', 'rgba(95,140,137,0.18)'], gloss: null, border: 'rgba(255,255,255,0.5)', blur: 20, tint: 'light' },
 };

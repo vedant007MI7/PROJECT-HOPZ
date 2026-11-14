@@ -23,16 +23,16 @@ function zoomBy(factor) {
 
 // + / - buttons. Rendered in App.js above the screens.
 export function ZoomButtons() {
-  const btn = { width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(20,24,32,0.92)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' };
+  const btn = { width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(248,242,233,0.94)', borderWidth: 1, borderColor: 'rgba(95,140,137,0.45)', alignItems: 'center', justifyContent: 'center' };
   return (
     <View pointerEvents="box-none" style={{ position: 'absolute', right: 16, top: TOP + 76, gap: 10 }}>
-      <Pressable accessibilityLabel="Show all points" onPress={() => refit && refit()} style={btn}><Text style={{ color: '#fff', fontSize: 20, lineHeight: 24 }}>◎</Text></Pressable>
+      <Pressable accessibilityLabel="Show all points" onPress={() => refit && refit()} style={btn}><Text style={{ color: C.tx, fontSize: 20, lineHeight: 24 }}>◎</Text></Pressable>
     </View>
   );
 }
 
 const RIDER = '#4DA3FF'; // rider and pickup point: blue
-const DRIVER = C.amber; // driver's car: amber
+const DRIVER = C.gold; // driver's car: gold
 const PAD = { top: 150, bottom: 420, left: 60, right: 60 }; // keep pins clear of the sheet at the bottom
 
 const pt = (p) => (p && typeof p.lat === 'number' && typeof p.lng === 'number' ? { lat: p.lat, lng: p.lng } : null);
@@ -145,7 +145,7 @@ export default function RealMap() {
         onRegionChangeComplete={(r) => { region = r; }}
         style={{ flex: 1 }}
         initialRegion={{ latitude: first.latitude - 0.0022, longitude: first.longitude, latitudeDelta: 0.015, longitudeDelta: 0.015 }}
-        userInterfaceStyle="dark"
+        userInterfaceStyle="light"
         toolbarEnabled={false}
         showsCompass={false}
         showsPointsOfInterest={false}
@@ -158,7 +158,7 @@ export default function RealMap() {
           <>
             {/* white casing under the route so it stays readable on the dark map */}
             <Polyline coordinates={path || sc.line.map((p) => ({ latitude: p.lat, longitude: p.lng }))} strokeColor="rgba(255,255,255,0.9)" strokeWidth={9} lineCap="round" lineJoin="round" />
-            <Polyline coordinates={path || sc.line.map((p) => ({ latitude: p.lat, longitude: p.lng }))} strokeColor={C.amber} strokeWidth={5} lineCap="round" lineJoin="round" />
+            <Polyline coordinates={path || sc.line.map((p) => ({ latitude: p.lat, longitude: p.lng }))} strokeColor={C.gold} strokeWidth={5} lineCap="round" lineJoin="round" />
           </>
         ) : null}
         {sc.pins.map((p) => (

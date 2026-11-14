@@ -52,8 +52,8 @@ export function DriverHome() {
             <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: s.online ? C.steel : C.tx2 }} />
           </View>
           <View style={{ flex: 1 }}>
-            <T weight="b" color="#fff">{s.online ? 'Looking for rides…' : 'Go online to get requests'}</T>
-            <T size={13} color="#DCE6EA">{s.online ? 'New requests appear here automatically' : 'You won\'t get requests while offline'}</T>
+            <T weight="b" color={C.tx}>{s.online ? 'Looking for rides…' : 'Go online to get requests'}</T>
+            <T size={13} color={C.tx2}>{s.online ? 'New requests appear here automatically' : 'You won\'t get requests while offline'}</T>
           </View>
         </Glass>
         <GlassButton title={s.online ? 'Go offline' : 'Go online'} onPress={toggle} icon={<Icon name="power" color="#fff" sw={2} />} />
@@ -73,12 +73,12 @@ export function DriverRequest() {
   const typeName = { auto: 'Hopz Auto', mini: 'Hopz Mini', sedan: 'Hopz Sedan' }[req.vehicle_type] || '';
   const C0 = 2 * Math.PI * 28;
   return (
-    <View style={{ flex: 1, backgroundColor: 'rgba(10,20,28,0.6)' }}>
+    <View style={{ flex: 1, backgroundColor: 'rgba(54,63,63,0.28)' }}>
       <Sheet bottom={14} contentStyle={{ gap: 14 }}>
         <Row style={{ gap: 14 }}>
           <View style={{ width: 64, height: 64 }}>
             <Svg width={64} height={64} viewBox="0 0 64 64" style={{ transform: [{ rotate: '-90deg' }] }}>
-              <Circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="6" />
+              <Circle cx="32" cy="32" r="28" fill="none" stroke="rgba(95,140,137,0.25)" strokeWidth="6" />
               <Circle cx="32" cy="32" r="28" fill="none" stroke={C.steel} strokeWidth="6" strokeLinecap="round" strokeDasharray={`${C0}`} strokeDashoffset={C0 * (1 - s.left / 15)} />
             </Svg>
             <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
@@ -94,17 +94,17 @@ export function DriverRequest() {
         <Glass variant="mid" radius={14} contentStyle={{ flexDirection: 'row', gap: 12, padding: 14 }}>
           <View style={{ alignItems: 'center', gap: 3, paddingTop: 4 }}>
             <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: C.amber }} />
-            <View style={{ width: 2, flex: 1, backgroundColor: 'rgba(220,236,246,0.24)' }} />
+            <View style={{ width: 2, flex: 1, backgroundColor: C.line }} />
             <View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: C.steel }} />
           </View>
           <View style={{ flex: 1, gap: 12 }}>
             <View>
-              <T size={12} weight="sb" color="#DCE6EA">Pickup · {Number(req.pickup_distance_km || 0).toFixed(1)} km away</T>
-              <T weight="b" color="#fff">{req.pickup?.text}</T>
+              <T size={12} weight="sb" color={C.tx2}>Pickup · {Number(req.pickup_distance_km || 0).toFixed(1)} km away</T>
+              <T weight="b" color={C.tx}>{req.pickup?.text}</T>
             </View>
             <View>
-              <T size={12} weight="sb" color="#DCE6EA">Drop · {Number(req.distance_km || 0).toFixed(1)} km trip</T>
-              <T weight="b" color="#fff">{req.drop?.text}</T>
+              <T size={12} weight="sb" color={C.tx2}>Drop · {Number(req.distance_km || 0).toFixed(1)} km trip</T>
+              <T weight="b" color={C.tx}>{req.drop?.text}</T>
             </View>
           </View>
         </Glass>
@@ -148,12 +148,12 @@ function PinEntry() {
       <Animated.View style={{ flexDirection: 'row', gap: 10, transform: [{ translateX: dx }] }}>
         {[0, 1, 2, 3].map((i) => (
           <Glass key={i} variant="mid" radius={14} style={{ width: 46, height: 52, borderWidth: 0 }}
-            contentStyle={{ alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderRadius: 14, borderColor: s.pinErr ? '#FF7A70' : i === s.pin.length ? C.amber : 'transparent' }}>
-            <Text style={{ fontFamily: F.hd, fontSize: 24, color: '#fff' }}>{s.pin[i] || ''}</Text>
+            contentStyle={{ alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderRadius: 14, borderColor: s.pinErr ? '#C2493B' : i === s.pin.length ? C.amber : 'transparent' }}>
+            <Text style={{ fontFamily: F.hd, fontSize: 24, color: C.tx }}>{s.pin[i] || ''}</Text>
           </Glass>
         ))}
       </Animated.View>
-      <T weight="sb" size={13} color="#FF9C92" style={{ minHeight: 16, textAlign: 'center' }}>
+      <T weight="sb" size={13} color="#C2493B" style={{ minHeight: 16, textAlign: 'center' }}>
         {s.pinErr ? s.pinMsg || 'Wrong PIN. Ask the rider to check their PIN.' : ''}
       </T>
       <View style={{ width: '100%', gap: 8 }}>
@@ -205,9 +205,9 @@ export function DriverTrip() {
           <PinEntry />
         ) : (
           <Glass variant="mid" radius={14} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14 }}>
-            <Icon name="pin" color="#fff" />
-            <T weight="sb" color="#fff" style={{ flex: 1 }}>{addr}</T>
-            <Price color="#fff">{s.ride?.fare}</Price>
+            <Icon name="pin" color={C.tx} />
+            <T weight="sb" color={C.tx} style={{ flex: 1 }}>{addr}</T>
+            <Price>{s.ride?.fare}</Price>
           </Glass>
         )}
         <View style={{ opacity: pinStage && s.pin.length < 4 ? 0.45 : 1 }}>
@@ -245,7 +245,7 @@ export function DriverDone() {
       <T color={C.tx2}>{r.drop?.text}</T>
       <Card style={{ width: '100%', marginTop: 22 }} contentStyle={{ padding: 18, gap: 10 }}>
         <Row style={{ justifyContent: 'space-between' }}><T color={C.tx2}>Distance</T><T weight="sb">{Number(r.distance_km || 0).toFixed(1)} km</T></Row>
-        <View style={{ height: 1, backgroundColor: 'rgba(220,236,246,0.24)' }} />
+        <View style={{ height: 1, backgroundColor: C.line }} />
         <Row style={{ justifyContent: 'space-between' }}><T weight="b">Fare</T><Price size={24}>{r.fare}</Price></Row>
       </Card>
       <Card style={{ width: '100%', marginTop: 12 }} contentStyle={{ padding: 16, gap: 4 }}>

@@ -105,10 +105,10 @@ export default function HopLoader({ width = Dimensions.get('window').width * 0.5
       <Svg width={width} height={height} viewBox="-110 -380 680 480">
         <Defs>
           <LinearGradient id="hlh" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="335" y2="0">
-            <Stop offset="0" stopColor="#EAF5FB" /><Stop offset="1" stopColor="#A9CAE0" />
+            <Stop offset="0" stopColor="#F5EEE4" /><Stop offset="1" stopColor="#CFC2B0" />
           </LinearGradient>
           <LinearGradient id="hlz" gradientUnits="userSpaceOnUse" x1="366" y1="-100" x2="456" y2="0">
-            <Stop offset="0" stopColor="#FFD9A8" /><Stop offset="1" stopColor="#F29A38" />
+            <Stop offset="0" stopColor="#A9D3CE" /><Stop offset="1" stopColor="#5F8C89" />
           </LinearGradient>
         </Defs>
         <G opacity={S.fade} transform={`translate(0,${S.rise * 10})`} fill="none" stroke="url(#hlh)" strokeWidth="22" strokeLinecap="round" strokeLinejoin="round">
@@ -116,8 +116,8 @@ export default function HopLoader({ width = Dimensions.get('window').width * 0.5
           <G transform={letter('o')}><Circle cx="152" cy="-50" r="50" /></G>
           <G transform={letter('p')}><Path d="M234 -100 V50" /><Circle cx="284" cy="-50" r="50" /></G>
         </G>
-        {S.ring > 0 ? <Circle cx="411" cy="-50" r={S.ringR} fill="none" stroke="#F7A851" strokeWidth="3" opacity={S.ring} /> : null}
-        <G fill="none" stroke="#F7A851" strokeLinecap="round" strokeLinejoin="round">
+        {S.ring > 0 ? <Circle cx="411" cy="-50" r={S.ringR} fill="none" stroke="#6FA6A2" strokeWidth="3" opacity={S.ring} /> : null}
+        <G fill="none" stroke="#6FA6A2" strokeLinecap="round" strokeLinejoin="round">
           <Path d={Z} strokeOpacity={Math.min(0.9, 0.10 * gv)} strokeWidth={66 + extra} />
           <Path d={Z} strokeOpacity={Math.min(0.9, 0.16 * gv)} strokeWidth={50 + extra} />
           <Path d={Z} strokeOpacity={Math.min(0.9, 0.26 * gv)} strokeWidth={36 + extra} />

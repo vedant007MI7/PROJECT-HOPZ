@@ -24,7 +24,7 @@ export function Splash() {
     ]).start();
   };
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: C.splash }}>
       <Svg style={StyleSheet.absoluteFill} width={W} height={HGT}>
         <Defs>
           <RadialGradient id="g1" cx="50%" cy="50%" r="50%">
@@ -42,21 +42,21 @@ export function Splash() {
       <Pressable style={{ alignItems: 'center', marginTop: -40 }} onPress={() => { tag.setValue(0); btn.setValue(0); setRun((n) => n + 1); }}>
         <HopLoader key={run} width={Math.min(W * 0.5, 220)} onLanded={landed} />
         <Animated.View style={{ opacity: tag }}>
-          <T color={C.tx2} size={16} style={{ marginTop: 8 }}>Your ride is one hop away</T>
+          <T color="#E3D8C9" size={16} style={{ marginTop: 8 }}>Your ride is one hop away</T>
         </Animated.View>
       </Pressable>
       <Animated.View style={{ position: 'absolute', left: 24, right: 24, bottom: 56, gap: 14, opacity: btn }}>
         {s.checking ? (
-          <T color={C.tx2} style={{ textAlign: 'center' }}>Signing you in…</T>
+          <T color="#E3D8C9" style={{ textAlign: 'center' }}>Signing you in…</T>
         ) : s.offline ? (
           <>
-            <T color={C.tx2} style={{ textAlign: 'center' }}>Can't reach the server. You're still logged in.</T>
+            <T color="#E3D8C9" style={{ textAlign: 'center' }}>Can't reach the server. You're still logged in.</T>
             <GlassButton title="Retry" onPress={restoreSession} />
           </>
         ) : (
           <>
             <GlassButton title="Get started" onPress={() => go('login')} />
-            <T color={C.tx2} size={13} style={{ textAlign: 'center' }}>Rider & driver apps in one</T>
+            <T color="#E3D8C9" size={13} style={{ textAlign: 'center' }}>Rider & driver apps in one</T>
           </>
         )}
       </Animated.View>
@@ -83,7 +83,7 @@ function useSubmit(startSession, call) {
   return { busy, err, submit };
 }
 
-const ErrText = ({ children }) => (children ? <T color="#FF8A7A" size={14} style={{ marginTop: 12 }}>{children}</T> : null);
+const ErrText = ({ children }) => (children ? <T color="#C2493B" size={14} style={{ marginTop: 12 }}>{children}</T> : null);
 
 export function Login() {
   const { s, go, set, startSession } = useApp();
@@ -92,7 +92,7 @@ export function Login() {
   const { busy, err, submit } = useSubmit(startSession, () => api.login(email.trim(), password));
   return (
     <ScrollView contentContainerStyle={{ paddingTop: TOP + 6, paddingHorizontal: 24, paddingBottom: 28, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-      <Logo width={110} />
+      <Logo width={110} light />
       <H size={34} style={{ marginTop: 30, marginBottom: 8 }}>Welcome back</H>
       <T color={C.tx2} style={{ marginBottom: 24 }}>Log in to book a hop or start driving.</T>
       <View style={{ gap: 16, marginTop: 20 }}>
