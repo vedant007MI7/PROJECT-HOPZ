@@ -382,7 +382,7 @@ export function TripDone() {
         ))}
       </Row>
       <View style={{ flex: 1, minHeight: 24 }} />
-      <GlassButton title={saving ? 'Saving…' : 'Done'} style={{ width: '100%' }} onPress={saving ? undefined : () => (online && !paid
+      <GlassButton title={saving ? 'Saving…' : 'Complete'} style={{ width: '100%' }} onPress={saving ? undefined : () => (online && !paid
         ? Alert.alert('Payment pending', 'You have not paid for this ride yet.', [{ text: 'Back', style: 'cancel' }, { text: 'Leave anyway', onPress: done }])
         : done())} />
     </ScrollView>

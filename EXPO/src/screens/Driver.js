@@ -1,7 +1,7 @@
 // Driver flow: Home (online/offline) -> Incoming request -> Active trip
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, Animated, Easing } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import { View, Text, Animated, Easing, ScrollView } from 'react-native';
+import Svg, { Circle, Path } from 'react-native-svg';
 import { useApp, callNumber } from '../state';
 import Glass from '../components/Glass';
 import Icon from '../components/Icons';
@@ -62,6 +62,11 @@ export function DriverHome() {
   );
 }
 
+// What the rider chose, in the driver's words.
+const payLine = (r) => (r?.payment_method === 'online'
+  ? `Payment: online (the rider pays ₹${r.fare} in the app)`
+  : `Payment: cash (collect ₹${r?.fare ?? ''} from the rider)`);
+
 export function DriverRequest() {
   const { s, acceptRequest, declineRequest } = useApp();
   const req = s.req || {};
@@ -103,6 +108,7 @@ export function DriverRequest() {
             </View>
           </View>
         </Glass>
+        <T weight="sb" size={14} color={C.tx2}>{payLine(req)}</T>
         <Row style={{ gap: 10 }}>
           <GlassButton variant="steel" title="Decline" style={{ flex: 1 }} onPress={declineRequest} />
           <GlassButton title="Accept" style={{ flex: 1.6 }} onPress={acceptRequest} />
@@ -194,6 +200,7 @@ export function DriverTrip() {
           <IconButton name="phone" label="Call rider" onPress={() => callNumber(s.ride?.rider?.phone)} />
           <IconButton name="chat" label="Message rider" />
         </Row>
+        <T weight="sb" size={13} color={C.tx2}>{payLine(s.ride)}</T>
         {pinStage ? (
           <PinEntry />
         ) : (
@@ -209,5 +216,46 @@ export function DriverTrip() {
         {s.stage < 2 ? <GlassButton variant="steel" title="Cancel ride" height={46} small onPress={cancelDriverRide} /> : null}
       </Sheet>
     </View>
+  );
+}
+
+// Shown after the driver completes the trip: what to expect for the money.
+export function DriverDone() {
+  const { s, go, flashToast } = useApp();
+  const r = s.ride || {};
+  const online = r.payment_method === 'online';
+  const paid = r.payment_status === 'paid';
+  const draw = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(draw, { toValue: 1, duration: 900, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+  }, []);
+  const finish = () => {
+    go('dHome', { ride: null, stage: 0, pin: '', pinErr: false });
+    flashToast(r.fare);
+  };
+  return (
+    <ScrollView contentContainerStyle={{ paddingTop: TOP + 10, paddingHorizontal: 24, paddingBottom: 28, alignItems: 'center', flexGrow: 1 }}>
+      <Animated.View style={{ transform: [{ scale: draw.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }) }], opacity: draw }}>
+        <Svg width={96} height={96} viewBox="0 0 96 96">
+          <Circle cx="48" cy="48" r="44" fill="none" stroke={C.steel} strokeWidth="5" />
+          <Path d="M30 49l13 13 24-26" fill="none" stroke={C.tx} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+      </Animated.View>
+      <H size={30} style={{ marginTop: 18, marginBottom: 4 }}>Trip completed</H>
+      <T color={C.tx2}>{r.drop?.text}</T>
+      <Card style={{ width: '100%', marginTop: 22 }} contentStyle={{ padding: 18, gap: 10 }}>
+        <Row style={{ justifyContent: 'space-between' }}><T color={C.tx2}>Distance</T><T weight="sb">{Number(r.distance_km || 0).toFixed(1)} km</T></Row>
+        <View style={{ height: 1, backgroundColor: 'rgba(220,236,246,0.24)' }} />
+        <Row style={{ justifyContent: 'space-between' }}><T weight="b">Fare</T><Price size={24}>{r.fare}</Price></Row>
+      </Card>
+      <Card style={{ width: '100%', marginTop: 12 }} contentStyle={{ padding: 16, gap: 4 }}>
+        <T weight="b">{!online ? `Collect ₹${r.fare} in cash` : paid ? 'Payment received ✓' : 'Waiting for the rider to pay…'}</T>
+        <T size={13} color={C.tx2}>
+          {!online ? 'The rider chose to pay cash.' : paid ? `The rider paid ₹${r.fare} online.` : 'The rider is paying online in the app. This updates by itself.'}
+        </T>
+      </Card>
+      <View style={{ flex: 1, minHeight: 24 }} />
+      <GlassButton title="Done" style={{ width: '100%' }} onPress={finish} />
+    </ScrollView>
   );
 }

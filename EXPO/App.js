@@ -15,13 +15,13 @@ import { Splash, Login, Signup } from './src/screens/Entry';
 import { RiderHome, Destination, RideOptions, Searching, DriverEnRoute, Trip, TripDone } from './src/screens/Rider';
 import { Activity, Earnings, Profile } from './src/screens/Lists';
 import Pay from './src/screens/Pay';
-import { DriverHome, DriverRequest, DriverTrip } from './src/screens/Driver';
+import { DriverHome, DriverRequest, DriverTrip, DriverDone } from './src/screens/Driver';
 
 const SCREENS = {
   splash: Splash, login: Login, signup: Signup,
   rHome: RiderHome, rDest: Destination, rRide: RideOptions, rSearch: Searching, rDriver: DriverEnRoute, rTrip: Trip, rDone: TripDone, rPay: Pay,
   rActivity: Activity, profile: Profile,
-  dHome: DriverHome, dRequest: DriverRequest, dTrip: DriverTrip, dEarn: Earnings,
+  dHome: DriverHome, dRequest: DriverRequest, dTrip: DriverTrip, dDone: DriverDone, dEarn: Earnings,
 };
 const MAP_SCREENS = ['rHome', 'rRide', 'rSearch', 'rDriver', 'rTrip', 'dHome', 'dRequest', 'dTrip'];
 const NAV_SCREENS = ['rHome', 'rActivity', 'profile', 'dHome', 'dEarn'];

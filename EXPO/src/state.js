@@ -329,8 +329,7 @@ export function AppProvider({ children }) {
   const completeTrip = async () => {
     try {
       const done = await api.complete(s.ride.id);
-      go('dHome', { ride: null, stage: 0, pin: '', pinErr: false });
-      flashToast(done.fare);
+      go('dDone', { ride: done, stage: 0, pin: '', pinErr: false });
     } catch (e) {
       fail('Could not complete')(e);
     }
@@ -431,6 +430,13 @@ export function AppProvider({ children }) {
         }
       }, 1000);
       stops.push(() => clearInterval(tick));
+    } else if (s.screen === 'dDone' && s.ride && s.ride.payment_method === 'online' && s.ride.payment_status !== 'paid') {
+      // Waiting for the rider to pay online: check until the server says it is paid.
+      poll(async () => {
+        const ride = await api.ride(s.ride.id);
+        if (!alive) return;
+        if (ride.payment_status === 'paid') setS((o) => (o.screen === 'dDone' && o.ride?.id === ride.id ? { ...o, ride } : o));
+      });
     } else if (s.screen === 'dTrip' && s.ride) {
       poll(async () => {
         const ride = await api.ride(s.ride.id);
