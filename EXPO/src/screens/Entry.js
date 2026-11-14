@@ -28,17 +28,32 @@ export function Splash() {
       <Svg style={StyleSheet.absoluteFill} width={W} height={HGT}>
         <Defs>
           <RadialGradient id="g1" cx="50%" cy="50%" r="50%">
-            <Stop offset="0" stopColor={C.amber} stopOpacity="0.38" />
-            <Stop offset="1" stopColor={C.amber} stopOpacity="0" />
+            <Stop offset="0" stopColor="#8FBDB8" stopOpacity="0.38" />
+            <Stop offset="1" stopColor="#8FBDB8" stopOpacity="0" />
           </RadialGradient>
           <RadialGradient id="g2" cx="50%" cy="50%" r="50%">
-            <Stop offset="0" stopColor={C.steel} stopOpacity="0.38" />
-            <Stop offset="1" stopColor={C.steel} stopOpacity="0" />
+            <Stop offset="0" stopColor="#5F8C89" stopOpacity="0.45" />
+            <Stop offset="1" stopColor="#5F8C89" stopOpacity="0" />
+          </RadialGradient>
+          <RadialGradient id="g3" cx="50%" cy="50%" r="50%">
+            <Stop offset="0" stopColor="#D8A93A" stopOpacity="0.14" />
+            <Stop offset="1" stopColor="#D8A93A" stopOpacity="0" />
+          </RadialGradient>
+          <RadialGradient id="g4" cx="50%" cy="50%" r="50%">
+            <Stop offset="0" stopColor="#EDE4D8" stopOpacity="0.10" />
+            <Stop offset="1" stopColor="#EDE4D8" stopOpacity="0" />
+          </RadialGradient>
+          <RadialGradient id="g5" cx="50%" cy="50%" r="50%">
+            <Stop offset="0" stopColor="#5F8C89" stopOpacity="0.28" />
+            <Stop offset="1" stopColor="#5F8C89" stopOpacity="0" />
           </RadialGradient>
         </Defs>
-        <Circle cx={40} cy={HGT * 0.3} r={190} fill="url(#g1)" />
-        <Circle cx={W - 20} cy={HGT * 0.72} r={210} fill="url(#g2)" />
-      </Svg>
+        <Circle cx={W * 0.5} cy={HGT * 0.46} r={W * 0.8} fill="url(#g5)" />
+        <Circle cx={40} cy={HGT * 0.18} r={200} fill="url(#g1)" />
+        <Circle cx={W - 20} cy={HGT * 0.8} r={230} fill="url(#g2)" />
+        <Circle cx={W * 0.8} cy={HGT * 0.12} r={140} fill="url(#g3)" />
+        <Circle cx={W * 0.3} cy={HGT * 0.94} r={170} fill="url(#g4)" />
+        </Svg>
       <Pressable style={{ alignItems: 'center', marginTop: -40 }} onPress={() => { tag.setValue(0); btn.setValue(0); setRun((n) => n + 1); }}>
         <HopLoader key={run} width={Math.min(W * 0.5, 220)} onLanded={landed} />
         <Animated.View style={{ opacity: tag }}>

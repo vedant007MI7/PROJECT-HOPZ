@@ -24,3 +24,7 @@ React Native (Expo SDK 58) app for riders and drivers. It talks to the Hopz back
 - `src/screens/`: Entry (splash, login, signup, password reset), Rider, Driver, Lists (activity, earnings, profile), Pay (Razorpay checkout in a WebView).
 - `src/components/RealMap.js`: the map behind the screens, with pins and the road route.
 - `src/places.js` and `src/routes.js`: destination search (Ola Maps) and road routes (OSRM), each in one file so the provider can be swapped.
+
+## Credits
+
+Map tiles: © OpenStreetMap contributors, © CARTO. Place search: Ola Maps. Road routes: OSRM.

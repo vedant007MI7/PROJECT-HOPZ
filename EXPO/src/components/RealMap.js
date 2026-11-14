@@ -167,6 +167,8 @@ export default function RealMap() {
           </Marker>
         ))}
       </MapView>
+      {/* Dusty Teal tint: Apple Maps has no custom style, so the map is shaded teal with a see-through layer that lets touches pass */}
+      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(95,140,137,0.34)' }} />
     </View>
   );
 }
