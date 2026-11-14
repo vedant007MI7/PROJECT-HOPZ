@@ -13,9 +13,9 @@ export default function Glass({ variant = 'dark', radius = 20, style, contentSty
       style={[
         { borderRadius: radius },
         shadow && {
-          shadowColor: variant === 'amber' || variant === 'sel' ? '#E8D2C4' : '#0A0508',
-          shadowOpacity: variant === 'amber' ? 0.35 : variant === 'sel' ? 0.6 : 0.45,
-          shadowRadius: variant === 'amber' ? 16 : variant === 'sel' ? 20 : 18,
+          shadowColor: variant === 'amber' ? '#2456D6' : variant === 'sel' ? '#4F86FF' : '#3C327A',
+          shadowOpacity: variant === 'amber' ? 0.5 : variant === 'sel' ? 0.65 : 0.12,
+          shadowRadius: variant === 'amber' ? 18 : variant === 'sel' ? 22 : 14,
           shadowOffset: { width: 0, height: 8 },
           elevation: 8,
         },
@@ -23,7 +23,7 @@ export default function Glass({ variant = 'dark', radius = 20, style, contentSty
       ]}
     >
       <View style={{ borderRadius: radius, overflow: 'hidden', borderWidth: v.bw || 1, borderColor: v.border, flexGrow: 1 }}>
-        <BlurView intensity={v.blur} tint={v.tint || 'dark'} style={StyleSheet.absoluteFill} />
+        <BlurView intensity={v.blur} tint={v.tint || 'light'} style={StyleSheet.absoluteFill} />
         <LinearGradient colors={v.colors} style={StyleSheet.absoluteFill} />
         {v.gloss ? (
           <LinearGradient colors={v.gloss} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: '48%' }} />

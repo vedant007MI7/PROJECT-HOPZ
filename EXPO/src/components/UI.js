@@ -85,11 +85,14 @@ export function Seg({ options, value, onChange }) {
 }
 
 // ---------- text input ----------
-export function Field({ label, ...props }) {
+export function Field({ label, icon, style, ...props }) {
   return (
     <View style={{ gap: 6 }}>
       <Text style={s.fieldLabel}>{label}</Text>
-      <TextInput placeholderTextColor="rgba(199,169,163,0.6)" style={s.input} {...props} />
+      <Glass variant="mid" radius={16} style={{ height: 54 }} contentStyle={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, gap: 10 }}>
+        {icon ? <Icon name={icon} size={20} color={C.tx2} /> : null}
+        <TextInput placeholderTextColor="rgba(74,70,112,0.6)" style={[{ flex: 1, height: 54, color: C.tx, fontSize: 16, fontFamily: F.m }, style]} {...props} />
+      </Glass>
     </View>
   );
 }

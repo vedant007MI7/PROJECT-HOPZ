@@ -106,17 +106,19 @@ export function Login() {
   const [password, setPassword] = useState('');
   const { busy, err, submit } = useSubmit(startSession, () => api.login(email.trim(), password));
   return (
-    <ScrollView contentContainerStyle={{ paddingTop: TOP + 6, paddingHorizontal: 24, paddingBottom: 28, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-      <Logo width={110} />
-      <H size={34} style={{ marginTop: 30, marginBottom: 8 }}>Welcome back</H>
-      <T color={C.tx2} style={{ marginBottom: 24 }}>Log in to book a hop or start driving.</T>
-      <View style={{ gap: 16, marginTop: 20 }}>
-        <Field label="Email or mobile number" placeholder="you@example.com or 98765 43210" autoCapitalize="none" autoCorrect={false} value={email} onChangeText={setEmail} />
-        <Field label="Password" placeholder="••••••••" secureTextEntry value={password} onChangeText={setPassword} />
+    <ScrollView contentContainerStyle={{ paddingTop: TOP + 30, paddingHorizontal: 22, paddingBottom: 28, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+      <View style={{ alignItems: 'center' }}>
+        <Logo width={150} light />
+        <H size={30} style={{ marginTop: 26, textAlign: 'center' }}>Welcome back</H>
+        <T color={C.tx2} style={{ marginTop: 6, marginBottom: 6, textAlign: 'center' }}>Log in to book a hop or start driving.</T>
+      </View>
+      <View style={{ gap: 14, marginTop: 28 }}>
+        <Field icon="user" label="Email or mobile number" placeholder="you@example.com or 98765 43210" autoCapitalize="none" autoCorrect={false} value={email} onChangeText={setEmail} />
+        <Field icon="shield" label="Password" placeholder="••••••••" secureTextEntry value={password} onChangeText={setPassword} />
       </View>
       <ErrText>{err}</ErrText>
       <Pressable onPress={() => { set({ resetId: email.trim() }); go('forgot'); }}>
-        <T weight="b" size={14} color={C.steel} style={{ textAlign: 'right', marginTop: 12, marginBottom: 22 }}>Forgot password?</T>
+        <T weight="b" size={14} color={C.amber} style={{ textAlign: 'right', marginTop: 12, marginBottom: 22 }}>Forgot password?</T>
       </Pressable>
       <GlassButton title={busy ? 'Logging in…' : 'Log in'} onPress={busy ? undefined : submit} />
       <View style={{ flex: 1, minHeight: 30 }} />
@@ -243,7 +245,7 @@ export function ResetPassword() {
       <ErrText>{err}</ErrText>
       {note ? <T color={C.tx2} size={13} style={{ marginTop: 12 }}>{note}</T> : null}
       <Pressable onPress={resend}>
-        <T weight="b" size={14} color={C.steel} style={{ textAlign: 'right', marginTop: 12 }}>Resend code</T>
+        <T weight="b" size={14} color={C.amber} style={{ textAlign: 'right', marginTop: 12 }}>Resend code</T>
       </Pressable>
       <View style={{ flex: 1, minHeight: 24 }} />
       <GlassButton title={busy ? 'Updating…' : 'Reset password'} onPress={busy ? undefined : submit} />

@@ -104,7 +104,7 @@ export function Destination() {
             value={s.q}
             onChangeText={(t) => set({ q: t })}
             placeholder="Search destination"
-            placeholderTextColor="rgba(199,169,163,0.6)"
+            placeholderTextColor="rgba(74,70,112,0.6)"
             style={{ flex: 1, height: 44, borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: C.inset, color: C.tx, paddingHorizontal: 14, fontSize: 16, fontFamily: F.m }}
           />
         </Row>

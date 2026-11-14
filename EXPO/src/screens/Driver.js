@@ -72,43 +72,40 @@ export function DriverRequest() {
   const req = s.req || {};
   const typeName = { auto: 'Hopz Auto', mini: 'Hopz Mini', sedan: 'Hopz Sedan' }[req.vehicle_type] || '';
   const C0 = 2 * Math.PI * 28;
+  const km = Number(req.distance_km || 0).toFixed(1);
+  const tile = { width: 40, height: 40, borderRadius: 13, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' };
   return (
-    <View style={{ flex: 1, backgroundColor: 'rgba(36,26,32,0.62)' }}>
-      <Sheet bottom={14} contentStyle={{ gap: 14 }}>
-        <Row style={{ gap: 14 }}>
-          <View style={{ width: 64, height: 64 }}>
-            <Svg width={64} height={64} viewBox="0 0 64 64" style={{ transform: [{ rotate: '-90deg' }] }}>
-              <Circle cx="32" cy="32" r="28" fill="none" stroke="rgba(247,239,231,0.14)" strokeWidth="6" />
-              <Circle cx="32" cy="32" r="28" fill="none" stroke={C.steel} strokeWidth="6" strokeLinecap="round" strokeDasharray={`${C0}`} strokeDashoffset={C0 * (1 - s.left / 15)} />
-            </Svg>
-            <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
-              <H size={20}>{s.left}</H>
-            </View>
+    <View style={{ flex: 1, backgroundColor: 'rgba(246,244,252,0.62)' }}>
+      <View pointerEvents="none" style={{ position: 'absolute', top: TOP + 34, left: 0, right: 0, alignItems: 'center' }}>
+        <T weight="b" size={12} color={C.tx2} style={{ letterSpacing: 2 }}>NEW RIDE REQUEST</T>
+        <View style={{ width: 124, height: 124, marginTop: 14 }}>
+          <Svg width={124} height={124} viewBox="0 0 64 64" style={{ transform: [{ rotate: '-90deg' }] }}>
+            <Circle cx="32" cy="32" r="28" fill="none" stroke="rgba(74,70,112,0.2)" strokeWidth="5" />
+            <Circle cx="32" cy="32" r="28" fill="none" stroke={C.amber} strokeWidth="5" strokeLinecap="round" strokeDasharray={`${C0}`} strokeDashoffset={C0 * (1 - s.left / 15)} />
+          </Svg>
+          <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
+            <H size={34}>{s.left}</H>
           </View>
+        </View>
+        <Text style={{ fontFamily: F.hd, fontSize: 48, color: C.tx, marginTop: 12, textShadowColor: 'rgba(90,135,255,0.4)', textShadowRadius: 22, textShadowOffset: { width: 0, height: 0 } }}>₹{req.fare}</Text>
+        <T size={14} color={C.tx2} style={{ marginTop: 2 }}>{typeName} · {req.payment_method === 'online' ? 'Online payment' : 'Cash'} · {km} km trip</T>
+      </View>
+      <Sheet bottom={14} contentStyle={{ gap: 10 }}>
+        <Glass variant="mid" radius={18} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }}>
+          <View style={tile}><Icon name="pin" color={C.amber} /></View>
           <View style={{ flex: 1 }}>
-            <H size={20}>New ride request</H>
-            <T size={14} color={C.tx2}>{typeName}</T>
-          </View>
-          <Price size={24} style={{ marginRight: 0 }}>{req.fare}</Price>
-        </Row>
-        <Glass variant="mid" radius={14} contentStyle={{ flexDirection: 'row', gap: 12, padding: 14 }}>
-          <View style={{ alignItems: 'center', gap: 3, paddingTop: 4 }}>
-            <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: C.amber }} />
-            <View style={{ width: 2, flex: 1, backgroundColor: C.line }} />
-            <View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: C.steel }} />
-          </View>
-          <View style={{ flex: 1, gap: 12 }}>
-            <View>
-              <T size={12} weight="sb" color={C.tx2}>Pickup · {Number(req.pickup_distance_km || 0).toFixed(1)} km away</T>
-              <T weight="b" color={C.tx}>{req.pickup?.text}</T>
-            </View>
-            <View>
-              <T size={12} weight="sb" color={C.tx2}>Drop · {Number(req.distance_km || 0).toFixed(1)} km trip</T>
-              <T weight="b" color={C.tx}>{req.drop?.text}</T>
-            </View>
+            <T size={12} weight="sb" color={C.tx2}>Pickup · {Number(req.pickup_distance_km || 0).toFixed(1)} km away</T>
+            <T weight="b" color={C.tx} numberOfLines={2}>{req.pickup?.text}</T>
           </View>
         </Glass>
-        <T weight="sb" size={14} color={C.tx2}>{payLine(req)}</T>
+        <Glass variant="mid" radius={18} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }}>
+          <View style={tile}><Icon name="car" color={C.amber} /></View>
+          <View style={{ flex: 1 }}>
+            <T size={12} weight="sb" color={C.tx2}>Drop · {km} km trip</T>
+            <T weight="b" color={C.tx} numberOfLines={2}>{req.drop?.text}</T>
+          </View>
+        </Glass>
+        <T weight="sb" size={13} color={C.tx2} style={{ marginHorizontal: 4 }}>{payLine(req)}</T>
         <Row style={{ gap: 10 }}>
           <GlassButton variant="steel" title="Decline" style={{ flex: 1 }} onPress={declineRequest} />
           <GlassButton title="Accept" style={{ flex: 1.6 }} onPress={acceptRequest} />

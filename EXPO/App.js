@@ -45,7 +45,7 @@ function Root() {
   const Screen = SCREENS[s.screen] || Splash;
   return (
     <LinearGradient colors={BG} style={{ flex: 1 }}>
-      <StatusBar style="light" />
+      <StatusBar style={s.screen === 'splash' ? 'light' : 'dark'} />
       {MAP_SCREENS.includes(s.screen) ? <RealMap /> : null}
       <FadeIn key={s.screen}>
         <Screen />
@@ -66,7 +66,7 @@ export default function App() {
   }, []);
 
   const [loaded] = useFonts({ DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold, Sora_600SemiBold, Sora_700Bold });
-  if (!loaded) return <View style={{ flex: 1, backgroundColor: '#3E3239' }} />;
+  if (!loaded) return <View style={{ flex: 1, backgroundColor: '#F6F4FC' }} />;
   return (
     <AppProvider>
       <Root />

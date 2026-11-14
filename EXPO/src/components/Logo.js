@@ -14,8 +14,13 @@ const Z = 'M366 -100 H456 L366 0 H456';
 
 export default function Logo({ width = 200, light = false, glow = true }) {
   const h = (width * 250) / 560;
-  const c1 = light ? '#3E3239' : '#F7EFE7';
-  const c2 = light ? '#6B5560' : '#E8D2C4';
+  const c1 = light ? '#0E0B26' : '#F7EFE7';
+  const c2 = light ? '#2A2656' : '#E8D2C4';
+  const z1 = light ? '#6F7FFF' : '#E8D2C4';
+  const z2 = light ? '#2456D6' : '#C7A9A3';
+  const gl = light ? '#7FA6FF' : '#D9BDB2';
+  const sh = light ? '#1E1E6E' : '#140A10';
+  const k = light ? 0.7 : 1;
   return (
     <Svg width={width} height={h} viewBox="-50 -180 560 250">
       <Defs>
@@ -24,23 +29,23 @@ export default function Logo({ width = 200, light = false, glow = true }) {
           <Stop offset="1" stopColor={c2} />
         </LinearGradient>
         <LinearGradient id="lz" gradientUnits="userSpaceOnUse" x1="366" y1="-100" x2="456" y2="0">
-          <Stop offset="0" stopColor="#E8D2C4" />
-          <Stop offset="1" stopColor="#C7A9A3" />
+          <Stop offset="0" stopColor={z1} />
+          <Stop offset="1" stopColor={z2} />
         </LinearGradient>
       </Defs>
       <G fill="none" strokeLinecap="round" strokeLinejoin="round">
         {/* soft shadow under the whole logo */}
         <G transform="translate(0,12)">
-          <G stroke="#140A10" strokeOpacity="0.10" strokeWidth="40">{HOP}<Path d={Z} /></G>
-          <G stroke="#140A10" strokeOpacity="0.14" strokeWidth="32">{HOP}<Path d={Z} /></G>
-          <G stroke="#140A10" strokeOpacity="0.22" strokeWidth="24">{HOP}<Path d={Z} /></G>
+          <G stroke={sh} strokeOpacity={0.10 * k} strokeWidth="40">{HOP}<Path d={Z} /></G>
+          <G stroke={sh} strokeOpacity={0.14 * k} strokeWidth="32">{HOP}<Path d={Z} /></G>
+          <G stroke={sh} strokeOpacity={0.22 * k} strokeWidth="24">{HOP}<Path d={Z} /></G>
         </G>
         <G stroke="url(#lh)" strokeWidth="22">{HOP}</G>
         {glow ? (
           <>
-            <Path d={Z} stroke="#D9BDB2" strokeOpacity="0.10" strokeWidth="66" />
-            <Path d={Z} stroke="#D9BDB2" strokeOpacity="0.16" strokeWidth="50" />
-            <Path d={Z} stroke="#D9BDB2" strokeOpacity="0.26" strokeWidth="36" />
+            <Path d={Z} stroke={gl} strokeOpacity="0.14" strokeWidth="66" />
+            <Path d={Z} stroke={gl} strokeOpacity="0.2" strokeWidth="50" />
+            <Path d={Z} stroke={gl} strokeOpacity="0.3" strokeWidth="36" />
           </>
         ) : null}
         <Path d={Z} stroke="url(#lz)" strokeWidth="22" />
