@@ -25,6 +25,8 @@ Check it is up: `GET /api/health` and `GET /api/health/db`.
 | `NEARBY_RADIUS_KM` | no | How far a driver sees requests, default 5 |
 | `RIDE_REQUEST_TIMEOUT_SECONDS` | no | A ride nobody accepts is cancelled after this, default 180 |
 | `RIDE_CREATE_LIMIT_PER_MINUTE` | no | Ride requests one rider can make per minute, default 5 |
+| `DB_STATEMENT_TIMEOUT_MS` | no | The database stops any single query running longer than this, default 15000 |
+| `METRICS_TOKEN` | no | Protects `GET /metrics`: send `Authorization: Bearer <token>`. Without it, `/metrics` is open locally and hidden in production |
 | `PG_POOL_MAX` | no | Most database connections one server process opens, default 10 |
 | `CORS_ORIGINS` | no | Comma-separated allowed browser origins; empty allows all |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | for online payment | Razorpay **test** keys (`rzp_test_`) |
@@ -48,6 +50,8 @@ A request flows `service` (route, auth, validation) → `business` (rules) → `
 - **Start PIN.** Four digits, shown only to the rider; five wrong tries lock the start.
 - **Unanswered requests expire.** Stale `requested` rides are cancelled by the system the next time any request reads them.
 - **Safe retries.** `POST /rides` and the payment start take an optional `Idempotency-Key` header. The key is claimed with an `INSERT` on a primary key, so two parallel requests cannot both run, and a repeat gets the saved answer.
+- **Outside services fail safely.** Razorpay and the email provider are called with a timeout, one retry for network errors and 5xx, and a circuit breaker: after 5 failures in a row calls fail at once for 30 s instead of waiting on a dead service. Payments answer a clear 503 (the app can offer cash). A slow query is stopped by `DB_STATEMENT_TIMEOUT_MS`, and on shutdown `/api/health` turns 503 while in-flight requests finish.
+- **Every request is traceable.** Each gets an `X-Request-Id` (returned in the response header and on every log line for it), and `GET /metrics` shows request counts and latency by route, active rides, online drivers, database pool use, event-loop delay and circuit-breaker state, in Prometheus format.
 - **Fare and distance are computed on the server.** The client never sends them.
 - **Payments.** The server creates the Razorpay order from the ride's fare and marks a ride paid only after checking Razorpay's signature. One paid payment per ride is a database constraint.
 - **Password reset.** A 6-digit code, stored only as a keyed hash, valid 10 minutes, locked after 5 wrong guesses, and the same reply whether or not the account exists.

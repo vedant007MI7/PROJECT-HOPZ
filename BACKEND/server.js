@@ -3,12 +3,14 @@ const app = require('./app');
 const db = require('./wrapper/db');
 const logger = require('./wrapper/logger');
 
+// While draining, /api/health answers 503 so a load balancer stops sending new requests here.
 const server = app.listen(config.port, () => {
   logger.info(`Hopz API listening on port ${config.port} (${config.nodeEnv})`);
 });
 
 function shutdown(signal) {
   logger.info(`${signal} received, shutting down`);
+  app.locals.draining = true;
   // Stop taking requests, let in-flight ones finish, then close the DB pool.
   server.close(async () => {
     await db.pool.end().catch(() => {});

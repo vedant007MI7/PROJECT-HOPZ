@@ -6,17 +6,22 @@ const logger = require('./wrapper/logger');
 const AppError = require('./function/app-error');
 const { fail } = require('./function/response');
 const config = require('./config');
+const requestContext = require('./service/request-context.middleware');
+const metricsRoutes = require('./service/metrics.routes');
 
 const app = express();
 
 // Render (and most hosts) put a proxy in front: needed for correct client IPs in rate limiting.
 app.set('trust proxy', 1);
 
+// First, so every request (including rejected ones) gets an id, a log line and a timing.
+app.use(requestContext);
 app.use(helmet());
 app.use(cors(config.corsOrigins.length ? { origin: config.corsOrigins } : undefined));
 app.use(express.json({ limit: '100kb' }));
 
 app.use('/api', routes);
+app.use('/metrics', metricsRoutes);
 
 app.use((req, res) => res.status(404).json(fail('Route not found')));
 
@@ -29,7 +34,7 @@ app.use((err, req, res, next) => {
   if (err.type === 'entity.parse.failed') return res.status(400).json(fail('Invalid JSON body'));
   if (err.type === 'entity.too.large') return res.status(413).json(fail('Request body too large'));
 
-  logger.error({ err, path: req.path }, 'Unhandled error');
+  (req.log || logger).error({ err, path: req.path }, 'Unhandled error');
   res.status(500).json(fail('Internal server error'));
 });
 

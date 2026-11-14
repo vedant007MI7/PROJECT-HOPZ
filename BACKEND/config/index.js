@@ -28,6 +28,8 @@ module.exports = {
   databaseUrl: env.DATABASE_URL,
   // Most connections one server process keeps open to Postgres.
   dbPoolMax: int(env.PG_POOL_MAX, 10),
+  // A single query running longer than this is stopped by the database.
+  dbStatementTimeoutMs: int(env.DB_STATEMENT_TIMEOUT_MS, 15000),
   jwtSecret: env.JWT_SECRET,
   jwtExpiresIn: env.JWT_EXPIRES_IN || '7d',
   pinMaxAttempts: int(env.PIN_MAX_ATTEMPTS, 5),
@@ -49,6 +51,8 @@ module.exports = {
   // Razorpay keys (use rzp_test_ keys in development). Without them, online payment returns 503.
   razorpayKeyId: env.RAZORPAY_KEY_ID || '',
   razorpayKeySecret: env.RAZORPAY_KEY_SECRET || '',
+  // Protects GET /metrics. Empty: open in development, hidden in production.
+  metricsToken: env.METRICS_TOKEN || '',
   // Comma-separated allowed origins for browsers; empty = allow all (native apps send no Origin anyway).
   corsOrigins: (env.CORS_ORIGINS || '').split(',').map((o) => o.trim()).filter(Boolean),
 };
