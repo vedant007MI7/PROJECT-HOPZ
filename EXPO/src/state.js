@@ -7,12 +7,17 @@ import { api, setToken, loadToken, hasToken, setUnauthorizedHandler } from './ap
 // Fallback when GPS is denied or unavailable: a fixed Koregaon Park point.
 export const HOME = { text: 'Koregaon Park, Pune', lat: 18.5362, lng: 73.894 };
 
-// Current GPS fix as { text, lat, lng }, or HOME if permission is denied / no fix.
-export async function currentPlace() {
+// The real GPS position as { text, lat, lng }, or null when permission is denied or there is no fix in time.
+// This is what gets sent to the server: a made-up position must never be sent as the driver's or rider's place.
+export async function realPlace() {
   try {
+    // The OS asks only the first time; after that this just returns the saved answer.
     const perm = await Location.requestForegroundPermissionsAsync();
-    if (perm.status !== 'granted') return HOME;
-    const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+    if (perm.status !== 'granted') return null;
+    const pos = await Promise.race([
+      Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('GPS timeout')), 12000)),
+    ]);
     const { latitude: lat, longitude: lng } = pos.coords;
     let text = 'Current location';
     try {
@@ -24,8 +29,13 @@ export async function currentPlace() {
     }
     return { text, lat, lng };
   } catch {
-    return HOME;
+    return null;
   }
+}
+
+// For showing on screen only: the real position, or HOME while there is none.
+export async function currentPlace() {
+  return (await realPlace()) || HOME;
 }
 
 export const VEH = [
@@ -228,7 +238,11 @@ export function AppProvider({ children }) {
   const requestRide = async () => {
     const d = placeByName(s.dest);
     try {
-      const pickup = await currentPlace();
+      const pickup = await realPlace();
+      if (!pickup) {
+        Alert.alert('Location needed', 'Turn on location so we know where to pick you up, then try again.');
+        return;
+      }
       const ride = await api.createRide({ pickup, drop: { text: d.name, lat: d.lat, lng: d.lng }, vehicle_type: s.vehicle, payment_method: s.payMethod });
       go('rSearch', { ride });
     } catch (e) {
@@ -283,8 +297,14 @@ export function AppProvider({ children }) {
   const setOnline = async (on) => {
     try {
       if (on) {
-        const here = await currentPlace();
+        // Never go online from a guessed place: riders would be matched to the wrong spot.
+        const here = await realPlace();
+        if (!here) {
+          Alert.alert('Location needed', 'Turn on location for Hopz (Settings > Hopz or Expo Go > Location), then try again.');
+          return;
+        }
         await api.location(here.lat, here.lng);
+        set({ fix: here, fixed: true });
       }
       await api.setOnline(on);
       set({ online: on, quiet: false });
