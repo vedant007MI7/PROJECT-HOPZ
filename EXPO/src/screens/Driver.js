@@ -29,7 +29,7 @@ export function DriverHome() {
       {s.toast ? (
         <View style={{ position: 'absolute', top: TOP + 62, alignSelf: 'center' }}>
           <Glass variant="amber" radius={999} contentStyle={{ paddingHorizontal: 18, paddingVertical: 10 }}>
-            <T weight="b" size={14} color="#fff">+₹{s.lastFare} added to today</T>
+            <T weight="b" size={14} color={C.amberText}>+₹{s.lastFare} added to today</T>
           </Glass>
         </View>
       ) : null}
@@ -56,7 +56,7 @@ export function DriverHome() {
             <T size={13} color={C.tx2}>{s.online ? 'New requests appear here automatically' : 'You won\'t get requests while offline'}</T>
           </View>
         </Glass>
-        <GlassButton title={s.online ? 'Go offline' : 'Go online'} onPress={toggle} icon={<Icon name="power" color="#fff" sw={2} />} />
+        <GlassButton title={s.online ? 'Go offline' : 'Go online'} onPress={toggle} icon={<Icon name="power" color={C.amberText} sw={2} />} />
       </Sheet>
     </View>
   );
@@ -73,12 +73,12 @@ export function DriverRequest() {
   const typeName = { auto: 'Hopz Auto', mini: 'Hopz Mini', sedan: 'Hopz Sedan' }[req.vehicle_type] || '';
   const C0 = 2 * Math.PI * 28;
   return (
-    <View style={{ flex: 1, backgroundColor: 'rgba(54,63,63,0.28)' }}>
+    <View style={{ flex: 1, backgroundColor: 'rgba(36,26,32,0.62)' }}>
       <Sheet bottom={14} contentStyle={{ gap: 14 }}>
         <Row style={{ gap: 14 }}>
           <View style={{ width: 64, height: 64 }}>
             <Svg width={64} height={64} viewBox="0 0 64 64" style={{ transform: [{ rotate: '-90deg' }] }}>
-              <Circle cx="32" cy="32" r="28" fill="none" stroke="rgba(95,140,137,0.25)" strokeWidth="6" />
+              <Circle cx="32" cy="32" r="28" fill="none" stroke="rgba(247,239,231,0.14)" strokeWidth="6" />
               <Circle cx="32" cy="32" r="28" fill="none" stroke={C.steel} strokeWidth="6" strokeLinecap="round" strokeDasharray={`${C0}`} strokeDashoffset={C0 * (1 - s.left / 15)} />
             </Svg>
             <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
@@ -148,12 +148,12 @@ function PinEntry() {
       <Animated.View style={{ flexDirection: 'row', gap: 10, transform: [{ translateX: dx }] }}>
         {[0, 1, 2, 3].map((i) => (
           <Glass key={i} variant="mid" radius={14} style={{ width: 46, height: 52, borderWidth: 0 }}
-            contentStyle={{ alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderRadius: 14, borderColor: s.pinErr ? '#C2493B' : i === s.pin.length ? C.amber : 'transparent' }}>
+            contentStyle={{ alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderRadius: 14, borderColor: s.pinErr ? C.err : i === s.pin.length ? C.amber : 'transparent' }}>
             <Text style={{ fontFamily: F.hd, fontSize: 24, color: C.tx }}>{s.pin[i] || ''}</Text>
           </Glass>
         ))}
       </Animated.View>
-      <T weight="sb" size={13} color="#C2493B" style={{ minHeight: 16, textAlign: 'center' }}>
+      <T weight="sb" size={13} color={C.err} style={{ minHeight: 16, textAlign: 'center' }}>
         {s.pinErr ? s.pinMsg || 'Wrong PIN. Ask the rider to check their PIN.' : ''}
       </T>
       <View style={{ width: '100%', gap: 8 }}>
@@ -191,7 +191,7 @@ export function DriverTrip() {
       <Sheet bottom={14} contentStyle={{ gap: 14 }}>
         <Row style={{ gap: 12 }}>
           <Glass variant="amber" radius={24} style={{ width: 48, height: 48 }} contentStyle={{ alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontFamily: F.hd, fontSize: 20, color: '#fff' }}>R</Text>
+            <Text style={{ fontFamily: F.hd, fontSize: 20, color: C.amberText }}>R</Text>
           </Glass>
           <View style={{ flex: 1 }}>
             <T weight="b" size={17}>{s.ride?.rider?.name || 'Rider'}</T>

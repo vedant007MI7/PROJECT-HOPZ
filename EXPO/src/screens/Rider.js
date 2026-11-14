@@ -17,7 +17,7 @@ export function RiderHome() {
     <View pointerEvents="box-none" style={{ flex: 1 }}>
       <Row style={{ position: 'absolute', left: 20, right: 20, top: TOP, gap: 12 }}>
         <IconButton variant="amber" onPress={() => go('profile')} label="Profile">
-          <Text style={{ fontFamily: F.hd, fontSize: 18, color: '#fff' }}>{(name[0] || '?').toUpperCase()}</Text>
+          <Text style={{ fontFamily: F.hd, fontSize: 18, color: C.amberText }}>{(name[0] || '?').toUpperCase()}</Text>
         </IconButton>
         <View style={{ flex: 1 }}>
           <T size={13} color={C.tx2}>Hey {name.split(' ')[0]}</T>
@@ -104,7 +104,7 @@ export function Destination() {
             value={s.q}
             onChangeText={(t) => set({ q: t })}
             placeholder="Search destination"
-            placeholderTextColor="rgba(122,99,80,0.6)"
+            placeholderTextColor="rgba(199,169,163,0.6)"
             style={{ flex: 1, height: 44, borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: C.inset, color: C.tx, paddingHorizontal: 14, fontSize: 16, fontFamily: F.m }}
           />
         </Row>
@@ -119,7 +119,7 @@ export function Destination() {
             {found.map((d) => (
               <PressScale key={d.id || d.name} onPress={() => pickFound(d)} to={0.98}>
                 <Glass variant="flat" radius={20} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 13 }}>
-                  <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: 'rgba(95,140,137,0.20)', alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' }}>
                     <Icon name="pin" />
                   </View>
                   <View style={{ flex: 1 }}>
@@ -136,7 +136,7 @@ export function Destination() {
         {list.map((d) => (
           <PressScale key={d.name} onPress={() => pick(d.name)} to={0.98}>
             <Glass variant="flat" radius={20} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 13 }}>
-              <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: 'rgba(95,140,137,0.20)', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="pin" />
               </View>
               <View style={{ flex: 1 }}>
@@ -186,7 +186,7 @@ export function RideOptions() {
             return (
               <PressScale key={v.id} onPress={() => set({ vehicle: v.id })} to={0.98}>
                 <Glass variant={on ? 'sel' : 'mid'} radius={14} style={on ? { borderRadius: 14 } : null} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12 }}>
-                  <View style={{ width: 54, height: 44, borderRadius: 14, backgroundColor: 'rgba(95,140,137,0.22)', alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: 54, height: 44, borderRadius: 14, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' }}>
                     <Icon name={v.icon} size={30} color={C.tx} sw={1.6} />
                   </View>
                   <View style={{ flex: 1 }}>
@@ -232,8 +232,8 @@ export function Searching() {
           </View>
         </Row>
         <View style={{ gap: 8 }}>
-          <View style={{ height: 12, borderRadius: 6, backgroundColor: 'rgba(95,140,137,0.20)' }} />
-          <View style={{ height: 12, width: '70%', borderRadius: 6, backgroundColor: 'rgba(95,140,137,0.20)' }} />
+          <View style={{ height: 12, borderRadius: 6, backgroundColor: C.soft }} />
+          <View style={{ height: 12, width: '70%', borderRadius: 6, backgroundColor: C.soft }} />
         </View>
         <Row style={{ justifyContent: 'space-between' }}>
           <T color={C.tx2}>{s.dest}</T>
@@ -248,7 +248,7 @@ export function Searching() {
 const DriverRow = ({ driver }) => (
   <Row style={{ gap: 14 }}>
     <Glass variant="amber" radius={28} style={{ width: 56, height: 56 }} contentStyle={{ alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontFamily: F.hd, fontSize: 22, color: '#fff' }}>{(driver?.name || '?')[0].toUpperCase()}</Text>
+      <Text style={{ fontFamily: F.hd, fontSize: 22, color: C.amberText }}>{(driver?.name || '?')[0].toUpperCase()}</Text>
     </Glass>
     <View style={{ flex: 1 }}>
       <T weight="b" size={17}>{driver?.name}</T>
@@ -308,12 +308,12 @@ export function Trip() {
           <H size={26}>{mins} min</H>
           <T size={14} color={C.tx2}>{km} km left</T>
         </Row>
-        <View style={{ height: 8, borderRadius: 8, backgroundColor: 'rgba(95,140,137,0.22)', overflow: 'hidden' }}>
+        <View style={{ height: 8, borderRadius: 8, backgroundColor: C.soft, overflow: 'hidden' }}>
           <View style={{ height: '100%', width: `${s.progress}%`, borderRadius: 8, backgroundColor: C.amber }} />
         </View>
         <Row style={{ gap: 12 }}>
           <Glass variant="amber" radius={22} style={{ width: 44, height: 44 }} contentStyle={{ alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontFamily: F.hd, color: '#fff' }}>{(s.ride?.driver?.name || '?')[0].toUpperCase()}</Text>
+            <Text style={{ fontFamily: F.hd, color: C.amberText }}>{(s.ride?.driver?.name || '?')[0].toUpperCase()}</Text>
           </Glass>
           <View style={{ flex: 1 }}>
             <T weight="b">{s.ride?.driver?.name} · {s.ride?.driver?.vehicle_model}</T>

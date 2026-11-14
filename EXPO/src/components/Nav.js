@@ -23,8 +23,8 @@ export default function Nav() {
           <Pressable key={t.key} onPress={t.press} style={{ flex: 1 }}>
             {t.on ? (
               <Glass variant="amber" radius={999} style={{ height: 58 }} contentStyle={s2.tab}>
-                <Icon name={t.icon} color="#fff" size={22} />
-                <Text style={[s2.lbl, { color: '#fff', textShadowColor: 'rgba(30,70,68,0.55)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 1 }]}>{t.label}</Text>
+                <Icon name={t.icon} color={C.amberText} size={22} />
+                <Text style={[s2.lbl, { color: C.amberText }]}>{t.label}</Text>
               </Glass>
             ) : (
               <View style={[s2.tab, { height: 58 }]}>

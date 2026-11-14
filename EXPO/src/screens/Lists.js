@@ -45,7 +45,7 @@ export function Activity() {
       {err ? <Empty>{err}</Empty> : data && !trips.length ? <Empty>No completed trips yet.</Empty> : null}
       {trips.map((r) => (
         <Card key={r.id} contentStyle={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-          <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(95,140,137,0.20)', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="pin" />
           </View>
           <View style={{ flex: 1 }}>
@@ -121,7 +121,7 @@ export function Profile() {
     <ScrollView contentContainerStyle={{ paddingTop: TOP + 6, paddingHorizontal: 20, paddingBottom: 130, gap: 14 }}>
       <Row style={{ gap: 16 }}>
         <Glass variant="amber" radius={36} style={{ width: 72, height: 72 }} contentStyle={{ alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontFamily: F.hd, fontSize: 30, color: '#fff' }}>{(u.name || '?')[0].toUpperCase()}</Text>
+          <Text style={{ fontFamily: F.hd, fontSize: 30, color: C.amberText }}>{(u.name || '?')[0].toUpperCase()}</Text>
         </Glass>
         <View>
           <H size={24}>{u.name}</H>

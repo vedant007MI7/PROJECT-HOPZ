@@ -41,7 +41,7 @@ export function IconButton({ name, onPress, label, size = 46, children, variant 
   return (
     <PressScale onPress={onPress} to={0.92}>
       <Glass variant={variant} radius={size / 2} style={{ width: size, height: size }} contentStyle={{ alignItems: 'center', justifyContent: 'center' }}>
-        {children || <Icon name={name} color={variant === 'amber' ? '#fff' : C.tx} />}
+        {children || <Icon name={name} color={variant === 'amber' ? C.amberText : C.tx} />}
       </Glass>
     </PressScale>
   );
@@ -52,7 +52,7 @@ export function Chip({ label, icon, on, onPress, style, height = 42 }) {
     <PressScale onPress={onPress} to={0.95} style={style}>
       <Glass variant={on ? 'amber' : 'steel'} radius={999} style={{ height }} contentStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 8 }}>
         {icon}
-        <Text numberOfLines={1} style={[s.chipTxt, on && { color: '#fff' }]}>
+        <Text numberOfLines={1} style={[s.chipTxt, on && { color: C.amberText }]}>
           {label}
         </Text>
       </Glass>
@@ -89,7 +89,7 @@ export function Field({ label, ...props }) {
   return (
     <View style={{ gap: 6 }}>
       <Text style={s.fieldLabel}>{label}</Text>
-      <TextInput placeholderTextColor="rgba(122,99,80,0.6)" style={s.input} {...props} />
+      <TextInput placeholderTextColor="rgba(199,169,163,0.6)" style={s.input} {...props} />
     </View>
   );
 }
@@ -153,7 +153,7 @@ export function Row({ children, style }) {
 
 const s = StyleSheet.create({
   btnTxt: { fontFamily: F.b, fontSize: 15 },
-  amberTxt: { color: '#fff', textShadowColor: 'rgba(30,70,68,0.55)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 1 },
+  amberTxt: { color: C.amberText },
   steelTxt: { color: C.tx },
   chipTxt: { fontFamily: F.b, fontSize: 14, color: C.tx },
   seg: { flexDirection: 'row', backgroundColor: C.inset, borderRadius: 16, padding: 4, gap: 4, borderWidth: 1, borderColor: C.line },
