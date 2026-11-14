@@ -36,7 +36,7 @@ async function request(method, path, body) {
       body: body ? JSON.stringify(body) : undefined,
     });
   } catch {
-    throw new Error('Cannot reach the server. Check your Wi-Fi and that the backend is running.');
+    throw new Error('No internet connection, or the server is not responding. Check your connection and try again.');
   }
   // A wrong password is also a 401, but then we hold no token yet, so only real expiries get here.
   if (res.status === 401 && token) {
@@ -60,6 +60,8 @@ export const api = {
   rides: (q = '') => request('GET', `/rides${q}`),
   cancel: (id) => post(`/rides/${id}/cancel`),
   rate: (id, b) => post(`/rides/${id}/rating`, b),
+  pay: (id) => post(`/rides/${id}/pay`),
+  verifyPay: (id, b) => post(`/rides/${id}/pay/verify`, b),
   // driver
   accept: (id) => post(`/rides/${id}/accept`),
   decline: (id) => post(`/rides/${id}/decline`),

@@ -16,6 +16,7 @@ async function cleanTables() {
   const ids = '(SELECT id FROM users WHERE email LIKE $1)';
   const rides = `(SELECT id FROM rides WHERE rider_id IN ${ids} OR driver_id IN ${ids})`;
   await db.query(`DELETE FROM ride_events WHERE ride_id IN ${rides} OR actor_id IN ${ids}`, [like]);
+  await db.query(`DELETE FROM payments WHERE ride_id IN ${rides}`, [like]);
   await db.query(`DELETE FROM ratings WHERE ride_id IN ${rides}`, [like]);
   await db.query(`DELETE FROM rides WHERE rider_id IN ${ids} OR driver_id IN ${ids}`, [like]);
   await db.query(`DELETE FROM push_tokens WHERE user_id IN ${ids}`, [like]);

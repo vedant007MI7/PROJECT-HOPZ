@@ -89,7 +89,7 @@ const istDay = (iso) => new Date(iso).toLocaleDateString('en-CA', { timeZone: 'A
 // ---------- app state ----------
 const INIT = {
   user: null, screen: 'splash', role: 'rider', authRole: 'rider',
-  vehicle: 'mini', dest: 'Phoenix Marketcity', q: '', fromRide: false,
+  vehicle: 'mini', payMethod: 'cash', dest: 'Phoenix Marketcity', q: '', fromRide: false,
   ride: null, req: null, progress: 0, rating: 4, tip: 0,
   online: false, quiet: false, left: 15, stage: 0, earn: 0, trips: 0, toast: false, lastFare: 0,
   pin: '', pinErr: false, pinMsg: '',
@@ -229,7 +229,7 @@ export function AppProvider({ children }) {
     const d = placeByName(s.dest);
     try {
       const pickup = await currentPlace();
-      const ride = await api.createRide({ pickup, drop: { text: d.name, lat: d.lat, lng: d.lng }, vehicle_type: s.vehicle });
+      const ride = await api.createRide({ pickup, drop: { text: d.name, lat: d.lat, lng: d.lng }, vehicle_type: s.vehicle, payment_method: s.payMethod });
       go('rSearch', { ride });
     } catch (e) {
       fail('Could not book')(e);
@@ -255,6 +255,29 @@ export function AppProvider({ children }) {
     }
     go('rHome', { ride: null, rating: 4, tip: 0 });
   };
+
+  // ----- online payment (Razorpay): the server makes the order, checkout runs in a WebView, the server verifies -----
+  const startPayment = async () => {
+    try {
+      const order = await api.pay(sRef.current.ride.id);
+      go('rPay', { payOrder: order });
+    } catch (e) {
+      fail('Could not start payment')(e);
+    }
+  };
+
+  const confirmPayment = async (response) => {
+    try {
+      const ride = await api.verifyPay(sRef.current.ride.id, response);
+      go('rDone', { ride, payOrder: null });
+      Alert.alert('Payment successful', 'Thank you! Your payment was received.');
+    } catch (e) {
+      go('rDone', { payOrder: null });
+      fail('Payment could not be confirmed')(e);
+    }
+  };
+
+  const cancelPayment = () => go('rDone', { payOrder: null });
 
   // ----- driver actions -----
   const setOnline = async (on) => {
@@ -465,7 +488,7 @@ export function AppProvider({ children }) {
   }
 
   const actions = {
-    startSession, restoreSession, logout, requestLogout, requestRide, cancelRide, finishRide,
+    startSession, restoreSession, logout, requestLogout, requestRide, cancelRide, finishRide, startPayment, confirmPayment, cancelPayment,
     setOnline, acceptRequest, declineRequest, markArrived, startTrip, completeTrip, cancelDriverRide,
   };
   return <Ctx.Provider value={{ s, set, go, vehicle, estimate, flashToast, ...actions }}>{children}</Ctx.Provider>;

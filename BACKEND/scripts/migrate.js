@@ -1,4 +1,13 @@
 const fs = require('fs');
+require('dotenv').config();
+// `npm run migrate:test` migrates the test database (TEST_DATABASE_URL) instead.
+if (process.argv.includes('--test')) {
+  if (!process.env.TEST_DATABASE_URL) {
+    console.error('Set TEST_DATABASE_URL in .env first.');
+    process.exit(1);
+  }
+  process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
+}
 const path = require('path');
 // config exits with a clear message if DATABASE_URL is missing.
 const db = require('../wrapper/db');

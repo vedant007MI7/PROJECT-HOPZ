@@ -14,11 +14,12 @@ import { FadeIn } from './src/components/UI';
 import { Splash, Login, Signup } from './src/screens/Entry';
 import { RiderHome, Destination, RideOptions, Searching, DriverEnRoute, Trip, TripDone } from './src/screens/Rider';
 import { Activity, Earnings, Profile } from './src/screens/Lists';
+import Pay from './src/screens/Pay';
 import { DriverHome, DriverRequest, DriverTrip } from './src/screens/Driver';
 
 const SCREENS = {
   splash: Splash, login: Login, signup: Signup,
-  rHome: RiderHome, rDest: Destination, rRide: RideOptions, rSearch: Searching, rDriver: DriverEnRoute, rTrip: Trip, rDone: TripDone,
+  rHome: RiderHome, rDest: Destination, rRide: RideOptions, rSearch: Searching, rDriver: DriverEnRoute, rTrip: Trip, rDone: TripDone, rPay: Pay,
   rActivity: Activity, profile: Profile,
   dHome: DriverHome, dRequest: DriverRequest, dTrip: DriverTrip, dEarn: Earnings,
 };

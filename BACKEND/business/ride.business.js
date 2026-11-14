@@ -56,7 +56,7 @@ async function createRide(user, input) {
     const row = await db.withTransaction(async (client) => {
       const ride = await rideRepo.insert(
         { riderId: user.id, pickup: input.pickup, drop: input.drop,
-          vehicleType: input.vehicle_type, distanceKm, fare },
+          vehicleType: input.vehicle_type, distanceKm, fare, paymentMethod: input.payment_method },
         client
       );
       await eventRepo.insert({ rideId: ride.id, status: RIDE_STATUS.REQUESTED, actorId: user.id }, client);

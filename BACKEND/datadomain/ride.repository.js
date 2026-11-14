@@ -31,11 +31,11 @@ const run = (client) => client || db;
 const insert = async (r, client) => {
   const { rows } = await run(client).query(
     `INSERT INTO rides (rider_id, pickup_text, pickup_lat, pickup_lng,
-                        drop_text, drop_lat, drop_lng, vehicle_type, distance_km, fare)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                        drop_text, drop_lat, drop_lng, vehicle_type, distance_km, fare, payment_method)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      RETURNING *`,
     [r.riderId, r.pickup.text, r.pickup.lat, r.pickup.lng, r.drop.text, r.drop.lat, r.drop.lng,
-      r.vehicleType, r.distanceKm, r.fare]
+      r.vehicleType, r.distanceKm, r.fare, r.paymentMethod || 'cash']
   );
   return rows[0];
 };
@@ -157,7 +157,13 @@ const cancelStaleRequested = async (seconds, client) => {
   return rows;
 };
 
+// Called inside the verify transaction, with the ride row locked.
+const setPaid = async (id, client) => {
+  await run(client).query("UPDATE rides SET payment_status = 'paid' WHERE id = $1", [id]);
+};
+
 module.exports = {
+  setPaid,
   cancelStaleRequested,
   insert,
   findActiveByRider,

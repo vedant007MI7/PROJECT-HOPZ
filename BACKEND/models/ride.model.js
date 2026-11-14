@@ -10,6 +10,8 @@ function toRide(row, viewerId) {
     vehicle_type: row.vehicle_type,
     distance_km: Number(row.distance_km),
     fare: row.fare,
+    payment_method: row.payment_method,
+    payment_status: row.payment_status,
     status: row.status,
     cancelled_by: row.cancelled_by,
     requested_at: row.requested_at,

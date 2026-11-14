@@ -1,6 +1,6 @@
 // Rider flow: Home -> Destination -> Ride options -> Searching -> Driver on the way -> Trip -> Done
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, Animated, Easing, StyleSheet } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView, Animated, Easing, StyleSheet, Alert } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { useApp, callNumber, VEH, SUGGESTIONS, PLACES, baseFare, registerPlace } from '../state';
 import { searchPlaces, placeCoords, searchEnabled } from '../places';
@@ -199,10 +199,9 @@ export function RideOptions() {
             );
           })}
         </View>
-        <Row style={{ gap: 10, paddingHorizontal: 4 }}>
-          <Icon name="card" size={20} color={C.tx2} />
-          <T weight="sb" style={{ flex: 1 }}>Pay with UPI</T>
-          <T size={14} color={C.tx2}>Change</T>
+        <Row style={{ gap: 8 }}>
+          <Chip label="Cash" on={s.payMethod === 'cash'} height={44} style={{ flex: 1 }} onPress={() => set({ payMethod: 'cash' })} />
+          <Chip label="Pay online" on={s.payMethod === 'online'} height={44} style={{ flex: 1 }} onPress={() => set({ payMethod: 'online' })} />
         </Row>
         <GlassButton title={booking ? 'Booking…' : `Confirm ${vehicle.name} · ₹${vehicle.fare}`} onPress={booking ? undefined : async () => { setBooking(true); await requestRide(); setBooking(false); }} />
       </Sheet>
@@ -333,8 +332,11 @@ export function Trip() {
 
 // ---------------- Trip complete ----------------
 export function TripDone() {
-  const { s, set, vehicle, finishRide } = useApp();
+  const { s, set, vehicle, finishRide, startPayment } = useApp();
   const [saving, setSaving] = useState(false);
+  const online = s.ride?.payment_method === 'online';
+  const paid = s.ride?.payment_status === 'paid';
+  const done = async () => { setSaving(true); await finishRide(); setSaving(false); };
   const fare = vehicle.fare;
   const base = baseFare(vehicle.id);
   const dist = fare - base;
@@ -359,6 +361,13 @@ export function TripDone() {
         <View style={{ height: 1, backgroundColor: 'rgba(220,236,246,0.24)' }} />
         <Row style={{ justifyContent: 'space-between' }}><T weight="b">Total</T><Price size={24}>{fare}</Price></Row>
       </Card>
+      {online && !paid ? (
+        <GlassButton title={`Pay ₹${fare} online`} style={{ width: '100%', marginTop: 16 }} onPress={startPayment} />
+      ) : (
+        <Card style={{ width: '100%', marginTop: 12 }} contentStyle={{ padding: 14 }}>
+          <T weight="sb">{online ? 'Paid online ✓' : `Pay ₹${fare} in cash to your driver`}</T>
+        </Card>
+      )}
       <T weight="b" style={{ marginTop: 22 }}>Rate {s.ride?.driver?.name?.split(' ')[0] || 'your driver'}</T>
       <Row style={{ gap: 6, marginTop: 8 }}>
         {[1, 2, 3, 4, 5].map((n) => (
@@ -373,7 +382,9 @@ export function TripDone() {
         ))}
       </Row>
       <View style={{ flex: 1, minHeight: 24 }} />
-      <GlassButton title={saving ? 'Saving…' : 'Done'} style={{ width: '100%' }} onPress={saving ? undefined : async () => { setSaving(true); await finishRide(); setSaving(false); }} />
+      <GlassButton title={saving ? 'Saving…' : 'Done'} style={{ width: '100%' }} onPress={saving ? undefined : () => (online && !paid
+        ? Alert.alert('Payment pending', 'You have not paid for this ride yet.', [{ text: 'Back', style: 'cancel' }, { text: 'Leave anyway', onPress: done }])
+        : done())} />
     </ScrollView>
   );
 }

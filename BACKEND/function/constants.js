@@ -30,6 +30,8 @@ const CANCELLABLE_STATUSES = ['requested', 'accepted', 'arrived'];
 
 const PIN = { LENGTH: 4 };
 
+const PAYMENT_METHODS = ['cash', 'online'];
+
 // "Today" and "this week" (Monday start) in driver earnings are counted in this timezone.
 const EARNINGS_TIMEZONE = 'Asia/Kolkata';
 
@@ -42,5 +44,6 @@ module.exports = {
   RIDER_ACTIVE_STATUSES,
   CANCELLABLE_STATUSES,
   PIN,
+  PAYMENT_METHODS,
   EARNINGS_TIMEZONE,
 };

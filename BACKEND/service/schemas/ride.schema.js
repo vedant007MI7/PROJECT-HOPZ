@@ -1,5 +1,5 @@
 const { z } = require('zod');
-const { VEHICLE_TYPES, RIDE_STATUS, PIN } = require('../../function/constants');
+const { VEHICLE_TYPES, RIDE_STATUS, PIN, PAYMENT_METHODS } = require('../../function/constants');
 
 const place = z.object({
   text: z.string().trim().min(1).max(200),
@@ -11,6 +11,7 @@ const createRide = z.object({
   pickup: place,
   drop: place,
   vehicle_type: z.enum(VEHICLE_TYPES),
+  payment_method: z.enum(PAYMENT_METHODS).default('cash'),
 });
 
 const rideIdParam = z.object({ id: z.string().uuid() });
@@ -31,4 +32,11 @@ const rateRide = z.object({
   comment: z.string().trim().max(500).optional(),
 });
 
-module.exports = { createRide, rideIdParam, listRides, startRide, rateRide };
+// What Razorpay's checkout hands back after a successful payment.
+const verifyPayment = z.object({
+  razorpay_order_id: z.string().min(1).max(100),
+  razorpay_payment_id: z.string().min(1).max(100),
+  razorpay_signature: z.string().min(1).max(200),
+});
+
+module.exports = { createRide, rideIdParam, listRides, startRide, rateRide, verifyPayment };

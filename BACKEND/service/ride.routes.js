@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const rideBusiness = require('../business/ride.business');
+const paymentBusiness = require('../business/payment.business');
 const requireAuth = require('./auth.middleware');
 const requireRole = require('./role.middleware');
 const validate = require('./validate');
@@ -62,6 +63,16 @@ router.post('/:id/complete', driver, withId, async (req, res) => {
 router.post('/:id/rating', rider, withId, validate(schemas.rateRide), async (req, res) => {
   const data = await rideBusiness.rateRide(req.user, req.valid.params.id, req.valid.body);
   res.status(201).json(ok(data));
+});
+
+// #16 start an online payment for a completed ride
+router.post('/:id/pay', rider, withId, async (req, res) => {
+  res.status(201).json(ok(await paymentBusiness.createPaymentOrder(req.user, req.valid.params.id)));
+});
+
+// #17 confirm it after Razorpay checkout; the signature is checked on the server
+router.post('/:id/pay/verify', rider, withId, validate(schemas.verifyPayment), async (req, res) => {
+  res.json(ok(await paymentBusiness.verifyPayment(req.user, req.valid.params.id, req.valid.body)));
 });
 
 module.exports = router;

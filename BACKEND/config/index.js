@@ -32,6 +32,9 @@ module.exports = {
   nearbyRadiusKm: num(env.NEARBY_RADIUS_KM, 5),
   // A 'requested' ride nobody accepts is cancelled after this long.
   rideRequestTimeoutSeconds: int(env.RIDE_REQUEST_TIMEOUT_SECONDS, 180),
+  // Razorpay keys (use rzp_test_ keys in development). Without them, online payment returns 503.
+  razorpayKeyId: env.RAZORPAY_KEY_ID || '',
+  razorpayKeySecret: env.RAZORPAY_KEY_SECRET || '',
   // Comma-separated allowed origins for browsers; empty = allow all (native apps send no Origin anyway).
   corsOrigins: (env.CORS_ORIGINS || '').split(',').map((o) => o.trim()).filter(Boolean),
 };

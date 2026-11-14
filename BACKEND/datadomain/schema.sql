@@ -122,3 +122,26 @@ CREATE INDEX IF NOT EXISTS idx_ride_events_actor ON ride_events (actor_id, statu
 -- Existing databases: widen cancelled_by so unanswered requests can be auto-cancelled by the system.
 ALTER TABLE rides DROP CONSTRAINT IF EXISTS rides_cancelled_by_check;
 ALTER TABLE rides ADD CONSTRAINT rides_cancelled_by_check CHECK (cancelled_by IN ('rider', 'driver', 'system'));
+
+-- Payments: how a ride is paid, and one row per Razorpay order.
+ALTER TABLE rides ADD COLUMN IF NOT EXISTS payment_method TEXT NOT NULL DEFAULT 'cash';
+ALTER TABLE rides ADD COLUMN IF NOT EXISTS payment_status TEXT NOT NULL DEFAULT 'unpaid';
+ALTER TABLE rides DROP CONSTRAINT IF EXISTS rides_payment_method_check;
+ALTER TABLE rides ADD CONSTRAINT rides_payment_method_check CHECK (payment_method IN ('cash', 'online'));
+ALTER TABLE rides DROP CONSTRAINT IF EXISTS rides_payment_status_check;
+ALTER TABLE rides ADD CONSTRAINT rides_payment_status_check CHECK (payment_status IN ('unpaid', 'paid'));
+
+CREATE TABLE IF NOT EXISTS payments (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ride_id             UUID NOT NULL REFERENCES rides(id),
+  amount              INTEGER NOT NULL CHECK (amount > 0),            -- in paise
+  currency            TEXT NOT NULL DEFAULT 'INR',
+  razorpay_order_id   TEXT NOT NULL UNIQUE,
+  razorpay_payment_id TEXT,
+  status              TEXT NOT NULL DEFAULT 'created' CHECK (status IN ('created', 'paid')),
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+  paid_at             TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS idx_payments_ride ON payments (ride_id);
+-- A ride can be paid only once, even if two verify calls race.
+CREATE UNIQUE INDEX IF NOT EXISTS uq_payments_ride_paid ON payments (ride_id) WHERE status = 'paid';
