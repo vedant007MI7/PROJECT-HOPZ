@@ -145,7 +145,7 @@ export default function RealMap() {
         onRegionChangeComplete={(r) => { region = r; }}
         style={{ flex: 1 }}
         initialRegion={{ latitude: first.latitude - 0.0022, longitude: first.longitude, latitudeDelta: 0.015, longitudeDelta: 0.015 }}
-        userInterfaceStyle="light"
+        userInterfaceStyle="dark"
         toolbarEnabled={false}
         showsCompass={false}
         showsPointsOfInterest={false}
@@ -154,8 +154,8 @@ export default function RealMap() {
         rotateEnabled={false}
         pitchEnabled={false}
       >
-        {/* Light CARTO street tiles replace Apple's map; the blue layer below tints them to match the UI */}
-        <UrlTile urlTemplate="https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" maximumZ={19} shouldReplaceMapContent zIndex={-1} />
+        {/* Dark CARTO street tiles replace Apple's map; the blue layer below tints them into the deep blue of the UI */}
+        <UrlTile urlTemplate="https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png" maximumZ={19} shouldReplaceMapContent zIndex={-1} />
         {sc.line ? (
           <>
             {/* white casing under the route so it stays readable on the dark map */}
@@ -170,7 +170,7 @@ export default function RealMap() {
         ))}
       </MapView>
       {/* Dusty Teal tint: Apple Maps has no custom style, so the map is shaded teal with a see-through layer that lets touches pass */}
-      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(80,120,255,0.26)' }} />
+      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(43,82,221,0.5)' }} />
     </View>
   );
 }
