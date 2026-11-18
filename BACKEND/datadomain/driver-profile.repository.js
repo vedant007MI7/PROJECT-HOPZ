@@ -35,4 +35,16 @@ const updateLocation = async (userId, lat, lng) => {
   return rows[0] || null;
 };
 
-module.exports = { create, findByUserId, setOnline, updateLocation };
+// Online drivers inside a lat/lng box whose last saved position is recent. Used only when Redis cannot answer.
+const findOnlineInBox = async ({ vehicleType, minLat, maxLat, minLng, maxLng, freshSeconds }) => {
+  const { rows } = await db.query(
+    `SELECT user_id, vehicle_type, lat, lng FROM driver_profiles
+     WHERE is_online AND ($1::text IS NULL OR vehicle_type = $1)
+       AND lat BETWEEN $2 AND $3 AND lng BETWEEN $4 AND $5
+       AND location_updated_at > now() - ($6::int * interval '1 second')`,
+    [vehicleType || null, minLat, maxLat, minLng, maxLng, freshSeconds]
+  );
+  return rows;
+};
+
+module.exports = { create, findByUserId, setOnline, updateLocation, findOnlineInBox };

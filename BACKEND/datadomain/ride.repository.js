@@ -31,11 +31,11 @@ const run = (client) => client || db;
 const insert = async (r, client) => {
   const { rows } = await run(client).query(
     `INSERT INTO rides (rider_id, pickup_text, pickup_lat, pickup_lng,
-                        drop_text, drop_lat, drop_lng, vehicle_type, distance_km, fare, payment_method)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                        drop_text, drop_lat, drop_lng, vehicle_type, distance_km, fare, payment_method, surge_multiplier)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
      RETURNING *`,
     [r.riderId, r.pickup.text, r.pickup.lat, r.pickup.lng, r.drop.text, r.drop.lat, r.drop.lng,
-      r.vehicleType, r.distanceKm, r.fare, r.paymentMethod || 'cash']
+      r.vehicleType, r.distanceKm, r.fare, r.paymentMethod || 'cash', r.surgeMultiplier || 1]
   );
   return rows[0];
 };
@@ -51,7 +51,7 @@ const findActiveByRider = async (riderId, client) => {
 
 const findActiveByDriver = async (driverId, client) => {
   const { rows } = await run(client).query(
-    `SELECT id FROM rides
+    `SELECT id, rider_id FROM rides
      WHERE driver_id = $1 AND status IN ('accepted', 'arrived', 'started') LIMIT 1`,
     [driverId]
   );
@@ -125,8 +125,9 @@ const incrementPinAttempts = async (id, client) => {
 
 // Cheap bounding-box filter; the exact distance is checked in the business layer.
 const listRequestedInBox = async ({ vehicleType, driverId, minLat, maxLat, minLng, maxLng }) => {
+  // age_seconds is measured by the database clock, so server clock differences cannot skew the dispatch waves.
   const { rows } = await db.query(
-    `${RIDE_SELECT}
+    `${RIDE_SELECT.replace('SELECT r.*,', 'SELECT r.*, EXTRACT(EPOCH FROM (now() - r.requested_at)) AS age_seconds,')}
      WHERE r.status = 'requested'
        AND r.vehicle_type = $1
        AND r.pickup_lat BETWEEN $2 AND $3
@@ -139,6 +140,30 @@ const listRequestedInBox = async ({ vehicleType, driverId, minLat, maxLat, minLn
     [vehicleType, minLat, maxLat, minLng, maxLng, driverId]
   );
   return rows;
+};
+
+// Of these drivers, the ones who cannot take this ride: they declined it, or are busy on another ride.
+const unavailableDriverIds = async (rideId, driverIds) => {
+  if (!driverIds.length) return [];
+  const { rows } = await db.query(
+    `SELECT actor_id AS id FROM ride_events WHERE ride_id = $1 AND status = 'declined' AND actor_id = ANY($2::uuid[])
+     UNION
+     SELECT driver_id AS id FROM rides
+     WHERE driver_id = ANY($2::uuid[]) AND status IN ('accepted', 'arrived', 'started')`,
+    [rideId, driverIds]
+  );
+  return rows.map((r) => r.id);
+};
+
+// How many ride requests of this vehicle type are waiting in a box (used for surge pricing).
+const countRequestedInBox = async ({ vehicleType, minLat, maxLat, minLng, maxLng }) => {
+  const { rows } = await db.query(
+    `SELECT count(*)::int AS n FROM rides
+     WHERE status = 'requested' AND vehicle_type = $1
+       AND pickup_lat BETWEEN $2 AND $3 AND pickup_lng BETWEEN $4 AND $5`,
+    [vehicleType, minLat, maxLat, minLng, maxLng]
+  );
+  return rows[0].n;
 };
 
 // This week's completed rides (week starts Monday in `timezone`), flagged if completed today.
@@ -168,6 +193,25 @@ const cancelStaleRequested = async (seconds, client) => {
   return rows;
 };
 
+// The same cleanup in ONE statement (one database round trip instead of a transaction of four): the cancel and the
+// 'cancelled' event for each ride happen together, atomically. Returns the cancelled rides.
+const expireStaleRequested = async (seconds) => {
+  const { rows } = await db.query(
+    `WITH stale AS (
+       UPDATE rides
+       SET status = 'cancelled', cancelled_by = 'system', cancelled_at = now()
+       WHERE status = 'requested' AND requested_at < now() - ($1::int * interval '1 second')
+       RETURNING id, rider_id
+     ), logged AS (
+       INSERT INTO ride_events (ride_id, status, actor_id)
+       SELECT id, 'cancelled', rider_id FROM stale
+     )
+     SELECT id, rider_id FROM stale`,
+    [seconds]
+  );
+  return rows;
+};
+
 // Called inside the verify transaction, with the ride row locked.
 const setPaid = async (id, client) => {
   await run(client).query("UPDATE rides SET payment_status = 'paid' WHERE id = $1", [id]);
@@ -176,6 +220,7 @@ const setPaid = async (id, client) => {
 module.exports = {
   setPaid,
   cancelStaleRequested,
+  expireStaleRequested,
   insert,
   findActiveByRider,
   findActiveByDriver,
@@ -185,5 +230,7 @@ module.exports = {
   updateStatus,
   incrementPinAttempts,
   listRequestedInBox,
+  unavailableDriverIds,
+  countRequestedInBox,
   listCompletedThisWeek,
 };

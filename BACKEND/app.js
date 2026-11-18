@@ -35,6 +35,8 @@ app.use((err, req, res, next) => {
   if (err.type === 'entity.too.large') return res.status(413).json(fail('Request body too large'));
 
   (req.log || logger).error({ err, path: req.path }, 'Unhandled error');
+  // The logger is silent in tests, which hid real 500s: print them there.
+  if (config.nodeEnv === 'test') console.error('UNHANDLED ERROR (test mode):', err);
   res.status(500).json(fail('Internal server error'));
 });
 

@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { Alert, Linking } from 'react-native';
 import * as Location from 'expo-location';
-import { api, setToken, loadToken, hasToken, setUnauthorizedHandler } from './api';
+import { api, setToken, loadToken, hasToken, getToken, setUnauthorizedHandler } from './api';
+import { connectRealtime } from './realtime';
 
 // ---------- places & pricing (fare is only an estimate; the server computes the real one) ----------
 // Fallback when GPS is denied or unavailable: a fixed Koregaon Park point.
@@ -87,6 +88,7 @@ const RIDER_SCREEN = { requested: 'rSearch', accepted: 'rDriver', arrived: 'rDri
 const DRIVER_STAGE = { accepted: 0, arrived: 1, started: 2 };
 const RIDER_LIVE = ['rSearch', 'rDriver', 'rTrip'];
 const POLL_MS = 4000;
+const POLL_SLOW_MS = 15000;
 
 // Opens the phone's dialer.
 export function callNumber(phone) {
@@ -118,6 +120,8 @@ export function AppProvider({ children }) {
   const rideKeyRef = useRef(null);
   const toastTimer = useRef(null);
   const dismissed = useRef(new Set());
+  const pollers = useRef(new Set()); // the refresh functions of the screen that is open right now
+  const socketUp = useRef(false); // while true, polling slows down: the server pushes changes
 
   const set = (p) => setS((o) => ({ ...o, ...p }));
   const go = (screen, extra = {}) => setS((o) => ({ ...o, quiet: false, screen, ...extra }));
@@ -415,8 +419,14 @@ export function AppProvider({ children }) {
     const poll = (fn) => {
       const run = () => fn().catch(() => {});
       run();
-      const iv = setInterval(run, POLL_MS);
-      stops.push(() => clearInterval(iv));
+      pollers.current.add(run); // a socket message runs this straight away
+      // Safety net: every 4 s normally, every 15 s while the socket is connected.
+      let timer;
+      const loop = () => {
+        timer = setTimeout(() => { run(); loop(); }, socketUp.current ? POLL_SLOW_MS : POLL_MS);
+      };
+      loop();
+      stops.push(() => { clearTimeout(timer); pollers.current.delete(run); });
     };
 
     if (s.role === 'rider' && s.ride && RIDER_LIVE.includes(s.screen)) {
@@ -494,6 +504,28 @@ export function AppProvider({ children }) {
       stops.forEach((f) => f());
     };
   }, [s.screen, s.role, s.online, s.ride?.id]);
+
+  // ----- real-time: the server pushes "something changed" over a WebSocket -----
+  useEffect(() => {
+    if (!s.user) return undefined;
+    const token = getToken();
+    if (!token) return undefined;
+    const refreshNow = () => pollers.current.forEach((run) => run());
+    const socket = connectRealtime(
+      token,
+      {
+        'ride:changed': refreshNow,
+        'requests:changed': refreshNow,
+        // The driver's live position goes straight into the rider's map; no extra request needed.
+        'driver:location': (m) => setS((o) => (
+          o.role === 'rider' && o.ride?.id === m.ride_id && o.ride.driver
+            ? { ...o, ride: { ...o.ride, driver: { ...o.ride.driver, location: { lat: m.lat, lng: m.lng } } } }
+            : o)),
+      },
+      { onUp: () => { socketUp.current = true; refreshNow(); }, onDown: () => { socketUp.current = false; } },
+    );
+    return () => { socketUp.current = false; socket.disconnect(); };
+  }, [s.user?.id]);
 
   // On launch: reuse the stored token. The server rejecting it (401) logs us out.
   useEffect(() => {

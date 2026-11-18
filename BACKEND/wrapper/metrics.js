@@ -54,7 +54,7 @@ function render(gauges = []) {
   }
 
   for (const g of gauges) {
-    out.push(`# HELP ${g.name} ${g.help}`, `# TYPE ${g.name} gauge`);
+    out.push(`# HELP ${g.name} ${g.help}`, `# TYPE ${g.name} ${g.type || 'gauge'}`);
     for (const s of g.samples) {
       out.push(`${g.name}${s.labels ? labels(s.labels) : ''} ${s.value}`);
     }

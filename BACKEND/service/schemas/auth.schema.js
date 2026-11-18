@@ -60,4 +60,9 @@ const resetPassword = z.object({
   new_password: z.string().min(8).max(72),
 });
 
-module.exports = { signup, login, forgotPassword, resetPassword };
+const changePassword = z.object({
+  current_password: z.string().min(1).max(72),
+  new_password: z.string().min(8).max(72),
+});
+
+module.exports = { signup, login, forgotPassword, resetPassword, changePassword };

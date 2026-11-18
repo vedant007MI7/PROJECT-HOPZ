@@ -5,6 +5,7 @@ if (process.env.TEST_DATABASE_URL) process.env.DATABASE_URL = process.env.TEST_D
 const request = require('supertest');
 const app = require('../app');
 const db = require('../wrapper/db');
+const redis = require('../wrapper/redis');
 
 // Only rows with this email domain are ever deleted, so a shared dev database stays safe.
 const TEST_DOMAIN = '@hopz-test.local';
@@ -57,7 +58,10 @@ async function setDriverState(userId, { online = true, lat = null, lng = null } 
 const PICKUP = { text: 'Connaught Place', lat: 28.6315, lng: 77.2167 };
 const DROP = { text: 'Noida Sector 62', lat: 28.6280, lng: 77.3649 };
 
-const closeDb = () => db.pool.end();
+const closeDb = async () => {
+  await db.pool.end();
+  await redis.close();
+};
 
 module.exports = {
   api, cleanTables, makeUser, auth, closeDb, setDriverState, PICKUP, DROP, TEST_DOMAIN,

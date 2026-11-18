@@ -2,8 +2,9 @@ const crypto = require('crypto');
 const userRepo = require('../datadomain/user.repository');
 const otpRepo = require('../datadomain/otp.repository');
 const db = require('../wrapper/db');
-const mailer = require('../wrapper/mailer');
-const sms = require('../wrapper/sms');
+const queue = require('../wrapper/queue');
+const jobs = require('./jobs.business');
+const session = require('./session.business');
 const { normalizePhone } = require('../function/phone');
 const logger = require('../wrapper/logger');
 const { hashPassword } = require('../wrapper/password');
@@ -45,11 +46,12 @@ async function requestReset({ identifier }) {
   await otpRepo.replace({ userId: user.id, purpose: PURPOSE, codeHash: hashCode(code), ttlMinutes: config.otpTtlMinutes });
   try {
     // The code goes back to where the person asked from: a phone number gets an SMS, an email gets an email.
-    if (isEmail(identifier)) {
-      await mailer.sendResetCode({ to: user.email, name: user.name, code, minutes: config.otpTtlMinutes });
-    } else {
-      await sms.sendCode({ to: user.phone, code, minutes: config.otpTtlMinutes });
-    }
+    const job = isEmail(identifier)
+      ? { channel: 'email', to: user.email, name: user.name, code, minutes: config.otpTtlMinutes }
+      : { channel: 'sms', to: user.phone, code, minutes: config.otpTtlMinutes };
+    // Queued when the job queue is on (the reply does not wait for the email provider, and a failure is retried);
+    // otherwise, or if Redis cannot take it, sent right here as before.
+    if (!(await queue.enqueue('send-reset-code', job))) await jobs.sendResetCode(job);
   } catch (err) {
     // The reply stays the same; the failure is in the log.
     logger.error({ err }, 'Could not send the password reset code');
@@ -75,6 +77,8 @@ async function resetPassword({ identifier, code, new_password: newPassword }) {
   });
 
   if (outcome.bad) throw new AppError(BAD_CODE, 400);
+  // The new password cancelled every earlier login (updatePassword adds 1 to token_version): drop the caches.
+  await session.afterChange(user.id);
   return { message: 'Password updated. You can log in now.' };
 }
 

@@ -34,6 +34,9 @@ Check it is up: `GET /api/health` and `GET /api/health/db`.
 | `BREVO_API_KEY`, `MAIL_FROM` | for email codes | Sends the reset code by email through Brevo |
 | `TEST_DATABASE_URL` | for tests | A separate Neon branch for `npm test` |
 
+## Redis (driver locations)
+Drivers send their position every few seconds. That live position is kept in Redis (a geospatial set plus a short-lived key per driver); Postgres gets it about once a minute. Redis is optional: without `REDIS_URL`, or when Redis is down (circuit breaker), everything falls back to Postgres. Settings: `REDIS_URL`, `DRIVER_LOCATION_TTL_SECONDS` (30), `DRIVER_LOCATION_SAVE_SECONDS` (60). Tests use a fake Redis; set `TEST_REDIS_URL` to point at a real one. Metric: `hopz_redis_state`.
+
 ## Scripts
 
 - `npm run migrate` applies `datadomain/schema.sql` to `DATABASE_URL`; `npm run migrate:test` applies it to `TEST_DATABASE_URL`.

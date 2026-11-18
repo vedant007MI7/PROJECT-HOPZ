@@ -151,7 +151,8 @@ Status moves: `requested → accepted | cancelled`, `accepted → arrived | canc
 ## 18. POST /drivers/location
 - Auth: driver
 - Body: `{ "lat": 28.61, "lng": 77.2 }`
-- Success `200`: the driver profile with the new location.
+- Success `200`: `{ "lat": 28.61, "lng": 77.2, "location_updated_at": "..." }`.
+- Stored in Redis (live position, expires after 30 s without updates); the database copy is saved about once a minute, or on every call when Redis is unavailable. `location_updated_at` is the time of the last database save.
 - Errors: `400` · `403`
 
 ## 19. GET /drivers/earnings
@@ -181,6 +182,18 @@ Status moves: `requested → accepted | cancelled`, `accepted → arrived | canc
 - Success `200`: `{ "message": "Password updated. You can log in now." }`
 - A code works once. After `OTP_MAX_ATTEMPTS` (default 5) wrong guesses it is locked, even for the right code.
 - Errors: `400` invalid input, or "Invalid or expired code" (identical for an unknown account, a wrong code, an expired code, a used code and a locked code) · `429`
+
+## 26. POST /auth/change-password
+- Auth: logged in, rate limited
+- Body: `{ "current_password": "...", "new_password": "min 8 chars" }`
+- Success `200`: `{ "token": "new JWT" }`. Every earlier token (all devices) stops working at once and open sockets are closed; use the new token.
+- Errors: `400` wrong current password or invalid input (not 401, because the app logs out on 401) · `401` · `429`
+
+## 27. POST /auth/logout-all
+- Auth: logged in
+- Success `200`: `{ "message": "..." }`. Every token issued so far stops working (all devices).
+- A password reset (#22) does the same. A revoked token gets `401 Invalid or expired token`.
+- Implementation: each user has `token_version`; tokens carry it as `tv`. The current version is cached 30 s in memory and 5 min in Redis, so on another server instance a revocation can take up to 30 s.
 
 ## 23. POST /rides/:id/pay
 - Auth: rider of the ride

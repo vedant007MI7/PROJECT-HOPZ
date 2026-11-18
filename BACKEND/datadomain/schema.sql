@@ -182,3 +182,10 @@ CREATE TABLE IF NOT EXISTS idempotency_keys (
   PRIMARY KEY (user_id, key)
 );
 CREATE INDEX IF NOT EXISTS idx_idempotency_created ON idempotency_keys (created_at);
+
+-- Surge pricing: the multiplier that was applied to this ride's fare (1 = none). Additive, so old code keeps working.
+ALTER TABLE rides ADD COLUMN IF NOT EXISTS surge_multiplier NUMERIC(3,2) NOT NULL DEFAULT 1 CHECK (surge_multiplier >= 1);
+
+-- Revoking logins: a token is valid only while its `tv` equals this number. Changing the password or
+-- "log out everywhere" adds 1. Additive with a default, so old code and old tokens keep working.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS token_version INTEGER NOT NULL DEFAULT 0;

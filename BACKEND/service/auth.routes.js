@@ -1,9 +1,11 @@
 const router = require('express').Router();
 const rateLimit = require('express-rate-limit');
 const config = require('../config');
+const RedisRateLimitStore = require('../wrapper/rate-limit-store');
 const authBusiness = require('../business/auth.business');
 const passwordReset = require('../business/password-reset.business');
 const validate = require('./validate');
+const requireAuth = require('./auth.middleware');
 const schemas = require('./schemas/auth.schema');
 const { ok, fail } = require('../function/response');
 
@@ -11,6 +13,7 @@ const { ok, fail } = require('../function/response');
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 20,
+  store: new RedisRateLimitStore({ prefix: 'auth' }),
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => config.nodeEnv === 'test',
@@ -33,6 +36,15 @@ router.post('/forgot-password', authLimiter, validate(schemas.forgotPassword), a
 
 router.post('/reset-password', authLimiter, validate(schemas.resetPassword), async (req, res) => {
   res.json(ok(await passwordReset.resetPassword(req.valid.body)));
+});
+
+// Both need a valid login. Changing the password returns a new token: the old one (and every other device's) stops working.
+router.post('/change-password', requireAuth, authLimiter, validate(schemas.changePassword), async (req, res) => {
+  res.json(ok(await authBusiness.changePassword(req.user, req.valid.body)));
+});
+
+router.post('/logout-all', requireAuth, async (req, res) => {
+  res.json(ok(await authBusiness.logoutAll(req.user)));
 });
 
 module.exports = router;

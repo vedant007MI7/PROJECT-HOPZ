@@ -3,6 +3,10 @@ const metrics = require('../wrapper/metrics');
 const db = require('../wrapper/db');
 const razorpay = require('../wrapper/razorpay');
 const mailer = require('../wrapper/mailer');
+const redis = require('../wrapper/redis');
+const cache = require('../wrapper/cache');
+const realtime = require('../wrapper/realtime');
+const queue = require('../wrapper/queue');
 const metricsRepo = require('../datadomain/metrics.repository');
 const logger = require('../wrapper/logger');
 
@@ -62,11 +66,35 @@ function processGauges() {
         { labels: { service: 'brevo' }, value: BREAKER_STATE[mailer.breaker.state] },
       ],
     },
+    {
+      name: 'hopz_socket_connections',
+      help: 'Apps currently connected by WebSocket (Socket.IO).',
+      samples: [{ value: realtime.connections() }],
+    },
+    {
+      name: 'hopz_cache_requests_total',
+      type: 'counter',
+      help: 'Cache lookups since start: hit (served from Redis), miss (loaded from the database), error (Redis failed).',
+      samples: ['hit', 'miss', 'error'].map((result) => ({ labels: { result }, value: cache.stats[result] })),
+    },
+    {
+      name: 'hopz_redis_state',
+      help: 'Redis: -1 = not configured, 0 = normal, 1 = testing again, 2 = open (skipped, using the database).',
+      samples: [{ value: redis.state() === 'disabled' ? -1 : BREAKER_STATE[redis.state()] }],
+    },
   ];
 }
 
 async function renderMetrics() {
-  return metrics.render([...processGauges(), ...(await businessGauges())]);
+  const jobCounts = await queue.counts(); // null when the queue is off
+  const queueGauges = jobCounts
+    ? [{
+      name: 'hopz_queue_jobs',
+      help: 'Background jobs by state (waiting, active, delayed, failed).',
+      samples: Object.entries(jobCounts).map(([state, value]) => ({ labels: { state }, value })),
+    }]
+    : [];
+  return metrics.render([...processGauges(), ...queueGauges, ...(await businessGauges())]);
 }
 
 module.exports = { renderMetrics };

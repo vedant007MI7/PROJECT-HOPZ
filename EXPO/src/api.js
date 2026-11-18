@@ -25,6 +25,7 @@ export async function loadToken() {
 }
 // Called when the server rejects our token (expired, account gone).
 export const hasToken = () => !!token;
+export const getToken = () => token;
 export const setUnauthorizedHandler = (fn) => { onUnauthorized = fn; };
 
 async function request(method, path, body, extraHeaders) {

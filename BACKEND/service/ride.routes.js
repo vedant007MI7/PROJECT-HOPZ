@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const rateLimit = require('express-rate-limit');
 const config = require('../config');
+const RedisRateLimitStore = require('../wrapper/rate-limit-store');
 const rideBusiness = require('../business/ride.business');
 const paymentBusiness = require('../business/payment.business');
 const requireAuth = require('./auth.middleware');
@@ -21,6 +22,7 @@ router.use(requireAuth);
 const createLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: config.rideCreateLimitPerMinute,
+  store: new RedisRateLimitStore({ prefix: 'ride-create' }),
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => String(req.user.id),

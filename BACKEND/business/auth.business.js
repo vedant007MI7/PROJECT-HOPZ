@@ -3,6 +3,7 @@ const driverProfileRepo = require('../datadomain/driver-profile.repository');
 const db = require('../wrapper/db');
 const { hashPassword, comparePassword } = require('../wrapper/password');
 const { signToken } = require('../wrapper/token');
+const session = require('./session.business');
 const { toUser } = require('../models/user.model');
 const { toDriverProfile } = require('../models/driver-profile.model');
 const AppError = require('../function/app-error');
@@ -88,4 +89,22 @@ async function login({ identifier, password }) {
   return { user, token: signToken(row) };
 }
 
-module.exports = { signup, login };
+// Changing the password cancels every other login (and open socket) and hands back a fresh token for this device.
+async function changePassword(user, { current_password: currentPassword, new_password: newPassword }) {
+  const row = await userRepo.findById(user.id);
+  // 400, not 401: the app logs the user out on any 401.
+  if (!row || !(await comparePassword(currentPassword, row.password_hash))) {
+    throw new AppError('Current password is wrong', 400);
+  }
+  await userRepo.updatePassword(user.id, await hashPassword(newPassword));
+  await session.afterChange(user.id);
+  return { token: signToken(await userRepo.findById(user.id)) };
+}
+
+// "Log out everywhere": every token issued so far stops working.
+async function logoutAll(user) {
+  await session.revokeAll(user.id);
+  return { message: 'Logged out on all devices. Log in again.' };
+}
+
+module.exports = { signup, login, changePassword, logoutAll };

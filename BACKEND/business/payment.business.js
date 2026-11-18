@@ -6,6 +6,7 @@ const config = require('../config');
 const AppError = require('../function/app-error');
 const { RIDE_STATUS } = require('../function/constants');
 const { toRide } = require('../models/ride.model');
+const realtime = require('../wrapper/realtime');
 
 const NOT_FOUND = 'Ride not found';
 
@@ -49,7 +50,9 @@ async function verifyPayment(user, rideId, input) {
     await paymentRepo.markPaid(input.razorpay_order_id, input.razorpay_payment_id, client);
     await rideRepo.setPaid(rideId, client);
   });
-  return toRide(await rideRepo.findById(rideId), user.id);
+  const row = await rideRepo.findById(rideId);
+  realtime.rideChanged(row); // the driver's screen is waiting for "paid"
+  return toRide(row, user.id);
 }
 
 module.exports = { createPaymentOrder, verifyPayment };

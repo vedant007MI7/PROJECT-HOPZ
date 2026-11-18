@@ -6,6 +6,12 @@ const db = require('../wrapper/db');
 const { expireStaleRequests } = require('./expiry.business');
 const config = require('../config');
 const { encodeCursor, decodeCursor } = require('../function/cursor');
+const driverLocationBusiness = require('./driver-location.business');
+const cache = require('../wrapper/cache');
+const realtime = require('../wrapper/realtime');
+const jobs = require('./jobs.business');
+const surgeBusiness = require('./surge.business');
+const cacheKeys = require('../function/cache-keys');
 const AppError = require('../function/app-error');
 const { haversineKm } = require('../function/geo');
 const { calculateFare } = require('../function/fare');
@@ -37,8 +43,14 @@ async function transition(client, ride, toStatus, actorId, extra) {
 }
 
 // Re-read after a change so the response carries the driver details and fresh timestamps.
+// Also the one place that tells the phones a ride changed: every status change ends by calling this (after commit).
 async function viewRide(rideId, user) {
-  return toRide(await rideRepo.findById(rideId), user.id);
+  const row = await rideRepo.findById(rideId);
+  if (realtime.enabled()) {
+    await driverLocationBusiness.forgetActiveRider(row.driver_id);
+    realtime.rideChanged(row);
+  }
+  return toRide(row, user.id);
 }
 
 async function createRide(user, input) {
@@ -51,18 +63,22 @@ async function createRide(user, input) {
   const distanceKm = Math.round(
     haversineKm(input.pickup.lat, input.pickup.lng, input.drop.lat, input.drop.lng) * 100
   ) / 100;
-  const fare = calculateFare(input.vehicle_type, distanceKm);
+  // 1 unless surge pricing is on and riders outnumber drivers around the pickup.
+  const surge = await surgeBusiness.forPickup({ lat: input.pickup.lat, lng: input.pickup.lng, vehicleType: input.vehicle_type });
+  const fare = Math.round(calculateFare(input.vehicle_type, distanceKm) * surge);
 
   try {
     const row = await db.withTransaction(async (client) => {
       const ride = await rideRepo.insert(
         { riderId: user.id, pickup: input.pickup, drop: input.drop,
-          vehicleType: input.vehicle_type, distanceKm, fare, paymentMethod: input.payment_method },
+          vehicleType: input.vehicle_type, distanceKm, fare, surgeMultiplier: surge, paymentMethod: input.payment_method },
         client
       );
       await eventRepo.insert({ rideId: ride.id, status: RIDE_STATUS.REQUESTED, actorId: user.id }, client);
       return ride;
     });
+    realtime.emitToDrivers('requests:changed');
+    await jobs.scheduleRideExpiry(row.id);
     return toRide(row, user.id);
   } catch (err) {
     // Two taps racing past the check above; the unique index catches the second.
@@ -75,6 +91,11 @@ async function getRide(user, rideId) {
   await expireStaleRequests();
   const ride = await rideRepo.findById(rideId);
   if (!ride || !isParticipant(ride, user.id)) throw new AppError(NOT_FOUND, 404);
+  // The rider's map follows the driver: use the live position from Redis (the database copy can be a minute old).
+  if (user.id === ride.rider_id && ride.driver_id && ['accepted', 'arrived', 'started'].includes(ride.status)) {
+    const live = await driverLocationBusiness.getLiveLocation(ride.driver_id);
+    if (live) Object.assign(ride, { driver_lat: live.lat, driver_lng: live.lng });
+  }
   return toRide(ride, user.id);
 }
 
@@ -154,6 +175,8 @@ async function driverStep(user, rideId, toStatus) {
     if (!ride || ride.driver_id !== user.id) throw new AppError(NOT_FOUND, 404);
     await transition(client, ride, toStatus, user.id);
   });
+  // The driver's earnings just changed: drop the cached totals (after the commit, so a reload sees the new ride).
+  if (toStatus === RIDE_STATUS.COMPLETED) await cache.del(cacheKeys.earnings(user.id));
   return viewRide(rideId, user);
 }
 
